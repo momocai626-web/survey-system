@@ -57,7 +57,6 @@
       padding: 48px 24px;
     }
 
-    /* Header */
     .header {
       text-align: center;
       margin-bottom: 40px;
@@ -92,7 +91,6 @@
       font-size: 0.95rem;
     }
 
-    /* Question Card */
     .question-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -135,7 +133,6 @@
       margin-left: 4px;
     }
 
-    /* Radio Options */
     .options label {
       display: flex;
       align-items: center;
@@ -188,7 +185,6 @@
       color: var(--text-primary);
     }
 
-    /* Textarea */
     textarea {
       width: 100%;
       padding: 14px 16px;
@@ -213,7 +209,6 @@
       color: var(--text-muted);
     }
 
-    /* Submit Button */
     .btn-submit {
       width: 100%;
       padding: 16px;
@@ -240,7 +235,6 @@
       cursor: not-allowed;
     }
 
-    /* Message */
     .message {
       text-align: center;
       padding: 14px;
@@ -264,7 +258,6 @@
       display: block;
     }
 
-    /* Nav */
     .nav-link {
       text-align: center;
       margin-top: 32px;
@@ -283,7 +276,6 @@
       color: var(--accent-primary);
     }
 
-    /* Responsive */
     @media (max-width: 600px) {
       .container { padding: 24px 16px; }
       .header h1 { font-size: 1.5rem; }
@@ -359,21 +351,64 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script>
-    const STORAGE_KEY = 'survey_responses';
     const form = document.getElementById('surveyForm');
     const submitBtn = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('message');
 
-    form.addEventListener('submit', (e) => {
+    // 取得結果檔案的 SHA
+    async function getResultsSha() {
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.resultsPath}?ref=${GITHUB_CONFIG.branch}`,
+        { headers: { 'Authorization': `Bearer ${GITHUB_CONFIG.token}` } }
+      );
+      if (!res.ok) throw new Error('無法讀取結果檔案');
+      const data = await res.json();
+      return data.sha;
+    }
+
+    // 寫入 results.json
+    async function saveResults(results) {
+      const sha = await getResultsSha();
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.resultsPath}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: '更新問卷結果',
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(results, null, 2)))),
+            sha,
+            branch: GITHUB_CONFIG.branch
+          })
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || '儲存失敗');
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      if (!GITHUB_CONFIG.token) {
+        messageDiv.className = 'message error';
+        messageDiv.textContent = '⚠️ 尚未設定 GitHub Token，請聯絡管理員';
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.textContent = '提交中...';
       messageDiv.className = 'message';
       messageDiv.textContent = '';
 
       const formData = new FormData(form);
-      const response = {
+      const newResponse = {
         github: formData.get('github'),
         vscode: formData.get('vscode'),
         qwen: formData.get('qwen'),
@@ -384,15 +419,26 @@
       };
 
       try {
-        const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        responses.push(response);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+        // 讀取現有結果
+        const res = await fetch(
+          `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.resultsPath}?ref=${GITHUB_CONFIG.branch}&t=${Date.now()}`
+        );
+        const fileData = await res.json();
+        const content = JSON.parse(atob(fileData.content));
+
+        // 追加新結果
+        content.push(newResponse);
+
+        // 寫回
+        await saveResults(content);
+
         messageDiv.className = 'message success';
         messageDiv.textContent = '✅ 問卷提交成功！感謝你的參與。';
         form.reset();
       } catch (error) {
         messageDiv.className = 'message error';
-        messageDiv.textContent = '❌ 提交失敗，請重試。';
+        messageDiv.textContent = '❌ 提交失敗：' + error.message;
+        console.error(error);
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '提交問卷';

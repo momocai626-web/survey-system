@@ -26,25 +26,37 @@
 - 開放式問題：
   - 你希望在課程中學到什麼？
   - 你覺得目前寫程式最大的困難是什麼？
-- 表單送出後，將結果存到瀏覽器 LocalStorage。
-- 提供「下載 CSV」按鈕，讓講師可以直接下載所有填答結果。
+- 表單送出後，將結果透過 Google Apps Script (GAS) 寫入 Google Sheets。
+- 送出使用 fetch POST + mode: no-cors，不需等待回應。
 
 2. 後台管理頁面 (admin.html)
 - 使用純 HTML + CSS + JavaScript。
-- 登入驗證：帳號 admin，密碼 123456。
-- 登入後可以讀取 LocalStorage 中的問卷結果。
-- 自動統計各選項數量，並以文字或 HTML 表格顯示。
+- 從 Google Apps Script (GAS) GET 讀取 Google Sheets 資料（JSON 格式）。
+- 自動統計各選項數量，並以長條圖視覺化顯示。
 - 開放式問題以文字列表顯示。
+- 提供「重新整理」按鈕。
 
-3. 部署到 GitHub Pages
+3. Google Apps Script (GAS) 設定
+- doPost(e)：解析 JSON body，寫入 Google Sheets，欄位順序為：
+  GitHub, VSCode, Qwen, Pages, Learn, Difficulty, Timestamp
+- doGet(e)：讀取 Sheets 所有資料，以第一列為 header（toLowerCase），
+  回傳 JSON 陣列。
+- 部署設定：執行身分「我」，存取權「所有人（含匿名）」。
+- 目前使用的 GAS URL：
+  https://script.google.com/macros/s/AKfycbx51RlYFqcX9zhN1COxSRqDi2extdKb8xIo6bZ8jugpRgBgx1tlb4Q7RJe7hM3R3eAO/exec
+
+4. 部署到 GitHub Pages
 - 請生成 README.md，說明如何：
   - 建立 GitHub Repo
-  - Push `index.html`、`admin.html`、`style.css`、`script.js`
+  - Push index.html、admin.html
   - 啟用 GitHub Pages
   - 學員透過 GitHub Pages 填寫問卷
-  - 講師透過後台登入（admin/123456）查看統計結果並下載 CSV
+  - 講師透過 admin.html 查看統計結果
 
 要求：
 - 程式碼必須能直接在瀏覽器執行，不需要安裝任何套件。
-- 結果存成 CSV 格式，支援下載。
+- 資料存在 Google Sheets，支援跨裝置提交。
 - 後台能即時讀取並統計。
+
+--- 待新增 ---
+- 課後問卷（另一個 index 頁面，題目待定）

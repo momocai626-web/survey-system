@@ -241,7 +241,7 @@
   </div>
 
   <script>
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2i1fgGlYIxFSgLWChMBfSTBthtWasJJ3VNDsAT9p3hY9CFuTfMDGoM4jShDrAcRc3Pb05ye3WW9ah/pub?output=csv';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx51RlYFqcX9zhN1COxSRqDi2extdKb8xIo6bZ8jugpRgBgx1tlb4Q7RJe7hM3R3eAO/exec';
 
     const questions = {
       github: {
@@ -262,48 +262,14 @@
       }
     };
 
-    // 解析 Google Sheets CSV
-    function parseCSV(csvText) {
-      const lines = csvText.trim().split('\n');
-      if (lines.length < 2) return [];
-      
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      const result = [];
-      
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line.trim()) continue;
-        
-        // 簡單按逗號分割
-        const values = line.split(',');
-        const row = {};
-        
-        headers.forEach((h, idx) => {
-          row[h] = values[idx] ? values[idx].trim() : '';
-        });
-        
-        result.push({
-          github: row['github'] || '',
-          vscode: row['vscode'] || '',
-          qwen: row['qwen'] || '',
-          pages: row['pages'] || '',
-          learn: row['learn'] || '',
-          difficulty: row['difficulty'] || '',
-          timestamp: row['timestamp'] || ''
-        });
-      }
-      return result;
-    }
-
     async function loadData() {
       document.getElementById('loadingState').style.display = 'block';
       document.getElementById('contentState').style.display = 'none';
 
       try {
-        const res = await fetch(SHEET_CSV_URL);
+        const res = await fetch(SCRIPT_URL);
         if (!res.ok) throw new Error('無法讀取資料');
-        const text = await res.text();
-        const responses = parseCSV(text);
+        const responses = await res.json();
 
         document.getElementById('totalCount').textContent = responses.length;
 

@@ -352,20 +352,23 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'survey_responses';
+    // Google Apps Script 寫入網址
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmkghKtbyhHNQ9aKSeODTcbf2hRI4KANGhrgNGmcpdt1zy9GL2BcY5U1374DQHkGDs/exec';
+    
     const form = document.getElementById('surveyForm');
     const submitBtn = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('message');
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       submitBtn.disabled = true;
       submitBtn.textContent = '提交中...';
       messageDiv.className = 'message';
       messageDiv.textContent = '';
 
       const formData = new FormData(form);
-      const response = {
+      const data = {
         github: formData.get('github'),
         vscode: formData.get('vscode'),
         qwen: formData.get('qwen'),
@@ -376,15 +379,21 @@
       };
 
       try {
-        const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        responses.push(response);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+        // 發送至 Google Apps Script
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(data)
+        });
+
         messageDiv.className = 'message success';
         messageDiv.textContent = '✅ 問卷提交成功！感謝你的參與。';
         form.reset();
       } catch (error) {
         messageDiv.className = 'message error';
-        messageDiv.textContent = '❌ 提交失敗，請重試。';
+        messageDiv.textContent = '❌ 提交失敗，請檢查網路後重試。';
+        console.error(error);
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '提交問卷';

@@ -378,8 +378,8 @@
     </div>
   </div>
 
-  <script src="config.js"></script>
   <script>
+    const STORAGE_KEY = 'survey_responses';
     const ADMIN_USERNAME = 'admin';
     const ADMIN_PASSWORD = '123456';
 
@@ -401,16 +401,6 @@
         options: ['完全不熟悉', '知道有這功能但沒用過', '曾經部署過網站', '熟悉部署流程並能獨立完成']
       }
     };
-
-    // 直接從 repo 讀取 results.json（公開檔案，無需 token）
-    async function fetchResults() {
-      const res = await fetch(
-        `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.resultsPath}?ref=${GITHUB_CONFIG.branch}&t=${Date.now()}`
-      );
-      if (!res.ok) throw new Error('無法讀取結果');
-      const data = await res.json();
-      return JSON.parse(atob(data.content));
-    }
 
     function login() {
       const username = document.getElementById('usernameInput').value;
@@ -435,30 +425,22 @@
       document.getElementById('statsGrid').innerHTML = '';
     }
 
-    async function loadData() {
-      try {
-        const responses = await fetchResults();
-        document.getElementById('totalCount').textContent = responses.length;
+    function loadData() {
+      const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      document.getElementById('totalCount').textContent = responses.length;
 
-        if (responses.length === 0) {
-          document.getElementById('statsGrid').innerHTML = `
-            <div class="empty-state" style="grid-column: 1/-1;">
-              <div class="icon">📭</div><p>目前尚無問卷資料</p>
-            </div>`;
-          document.getElementById('learnList').innerHTML = '<p style="color: var(--text-muted); text-align: center;">目前尚無資料</p>';
-          document.getElementById('difficultyList').innerHTML = '<p style="color: var(--text-muted); text-align: center;">目前尚無資料</p>';
-          return;
-        }
-
-        renderStats(responses);
-        renderOpenQuestions(responses);
-      } catch (err) {
-        console.error(err);
+      if (responses.length === 0) {
         document.getElementById('statsGrid').innerHTML = `
           <div class="empty-state" style="grid-column: 1/-1;">
-            <div class="icon">⚠️</div><p>讀取資料失敗：${err.message}</p>
+            <div class="icon">📭</div><p>目前尚無問卷資料</p>
           </div>`;
+        document.getElementById('learnList').innerHTML = '<p style="color: var(--text-muted); text-align: center;">目前尚無資料</p>';
+        document.getElementById('difficultyList').innerHTML = '<p style="color: var(--text-muted); text-align: center;">目前尚無資料</p>';
+        return;
       }
+
+      renderStats(responses);
+      renderOpenQuestions(responses);
     }
 
     function renderStats(responses) {
@@ -512,29 +494,26 @@
     }
 
     function downloadCSV() {
-      const grid = document.getElementById('statsGrid');
-      if (grid.querySelector('.empty-state')) { alert('目前沒有資料可下載'); return; }
+      const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (responses.length === 0) { alert('目前沒有資料可下載'); return; }
 
-      // Re-fetch to get raw data for CSV
-      fetchResults().then(responses => {
-        const headers = ['GitHub', 'VSCode', 'Qwen', 'Pages', '期望學習內容', '寫程式困難', '提交時間'];
-        const csvRows = [headers.join(',')];
-        responses.forEach(r => {
-          csvRows.push([
-            escapeCSV(r.github), escapeCSV(r.vscode), escapeCSV(r.qwen),
-            escapeCSV(r.pages), escapeCSV(r.learn), escapeCSV(r.difficulty),
-            escapeCSV(r.timestamp)
-          ].join(','));
-        });
-
-        const blob = new Blob(['\ufeff' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `survey_results_${new Date().toISOString().slice(0,10)}.csv`;
-        link.click();
-        URL.revokeObjectURL(url);
+      const headers = ['GitHub', 'VSCode', 'Qwen', 'Pages', '期望學習內容', '寫程式困難', '提交時間'];
+      const csvRows = [headers.join(',')];
+      responses.forEach(r => {
+        csvRows.push([
+          escapeCSV(r.github), escapeCSV(r.vscode), escapeCSV(r.qwen),
+          escapeCSV(r.pages), escapeCSV(r.learn), escapeCSV(r.difficulty),
+          escapeCSV(r.timestamp)
+        ].join(','));
       });
+
+      const blob = new Blob(['\ufeff' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `survey_results_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
     }
 
     function escapeCSV(field) {

@@ -351,64 +351,21 @@
     </div>
   </div>
 
-  <script src="config.js"></script>
   <script>
+    const STORAGE_KEY = 'survey_responses';
     const form = document.getElementById('surveyForm');
     const submitBtn = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('message');
 
-    // 取得結果檔案的 SHA
-    async function getResultsSha() {
-      const res = await fetch(
-        `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.resultsPath}?ref=${GITHUB_CONFIG.branch}`,
-        { headers: { 'Authorization': `Bearer ${GITHUB_CONFIG.token}` } }
-      );
-      if (!res.ok) throw new Error('無法讀取結果檔案');
-      const data = await res.json();
-      return data.sha;
-    }
-
-    // 寫入 results.json
-    async function saveResults(results) {
-      const sha = await getResultsSha();
-      const res = await fetch(
-        `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.resultsPath}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: '更新問卷結果',
-            content: btoa(unescape(encodeURIComponent(JSON.stringify(results, null, 2)))),
-            sha,
-            branch: GITHUB_CONFIG.branch
-          })
-        }
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || '儲存失敗');
-      }
-    }
-
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-
-      if (!GITHUB_CONFIG.token) {
-        messageDiv.className = 'message error';
-        messageDiv.textContent = '⚠️ 尚未設定 GitHub Token，請聯絡管理員';
-        return;
-      }
-
       submitBtn.disabled = true;
       submitBtn.textContent = '提交中...';
       messageDiv.className = 'message';
       messageDiv.textContent = '';
 
       const formData = new FormData(form);
-      const newResponse = {
+      const response = {
         github: formData.get('github'),
         vscode: formData.get('vscode'),
         qwen: formData.get('qwen'),
@@ -419,26 +376,15 @@
       };
 
       try {
-        // 讀取現有結果
-        const res = await fetch(
-          `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.resultsPath}?ref=${GITHUB_CONFIG.branch}&t=${Date.now()}`
-        );
-        const fileData = await res.json();
-        const content = JSON.parse(atob(fileData.content));
-
-        // 追加新結果
-        content.push(newResponse);
-
-        // 寫回
-        await saveResults(content);
-
+        const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        responses.push(response);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
         messageDiv.className = 'message success';
         messageDiv.textContent = '✅ 問卷提交成功！感謝你的參與。';
         form.reset();
       } catch (error) {
         messageDiv.className = 'message error';
-        messageDiv.textContent = '❌ 提交失敗：' + error.message;
-        console.error(error);
+        messageDiv.textContent = '❌ 提交失敗，請重試。';
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '提交問卷';

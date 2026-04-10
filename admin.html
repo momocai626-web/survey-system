@@ -262,30 +262,34 @@
       }
     };
 
-    // 按順序解析 CSV，不依賴表頭名稱
+    // 解析 Google Sheets CSV
     function parseCSV(csvText) {
       const lines = csvText.trim().split('\n');
       if (lines.length < 2) return [];
       
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
       const result = [];
-      // 從第 2 列開始讀取（跳過第 1 列表頭，即使它是空的）
+      
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
         if (!line.trim()) continue;
         
-        const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+        // 簡單按逗號分割
+        const values = line.split(',');
+        const row = {};
         
-        // 依序對應欄位 (0:GitHub, 1:VSCode, 2:Qwen, 3:Pages, 4:Learn, 5:Difficulty, 6:Time)
-        const clean = v => v ? v.trim().replace(/^"|"$/g, '') : '';
+        headers.forEach((h, idx) => {
+          row[h] = values[idx] ? values[idx].trim() : '';
+        });
         
         result.push({
-          github: clean(values[0]),
-          vscode: clean(values[1]),
-          qwen: clean(values[2]),
-          pages: clean(values[3]),
-          learn: clean(values[4]),
-          difficulty: clean(values[5]),
-          timestamp: clean(values[6])
+          github: row['github'] || '',
+          vscode: row['vscode'] || '',
+          qwen: row['qwen'] || '',
+          pages: row['pages'] || '',
+          learn: row['learn'] || '',
+          difficulty: row['difficulty'] || '',
+          timestamp: row['timestamp'] || ''
         });
       }
       return result;

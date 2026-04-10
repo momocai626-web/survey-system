@@ -85,10 +85,6 @@
       box-shadow: 0 2px 12px rgba(99, 102, 241, 0.3);
     }
 
-    .btn-success {
-      background: linear-gradient(135deg, #10b981 0%, #34d399 100%); color: white;
-    }
-
     .stats-overview {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px; margin-bottom: 32px;
@@ -245,7 +241,6 @@
   </div>
 
   <script>
-    // Google Sheets 發布的 CSV 連結
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2i1fgGlYIxFSgLWChMBfSTBthtWasJJ3VNDsAT9p3hY9CFuTfMDGoM4jShDrAcRc3Pb05ye3WW9ah/pub?output=csv';
 
     const questions = {
@@ -267,27 +262,31 @@
       }
     };
 
-    // 簡單 CSV 解析函數
+    // 按順序解析 CSV，不依賴表頭名稱
     function parseCSV(csvText) {
       const lines = csvText.trim().split('\n');
       if (lines.length < 2) return [];
-      const headers = lines[0].split(',').map(h => h.trim());
+      
       const result = [];
-
+      // 從第 2 列開始讀取（跳過第 1 列表頭，即使它是空的）
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
         if (!line.trim()) continue;
         
-        // 處理含逗號的欄位（簡易版）
         const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
         
-        const row = {};
-        headers.forEach((h, index) => {
-          let val = values[index] ? values[index].trim() : '';
-          if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
-          row[h] = val;
+        // 依序對應欄位 (0:GitHub, 1:VSCode, 2:Qwen, 3:Pages, 4:Learn, 5:Difficulty, 6:Time)
+        const clean = v => v ? v.trim().replace(/^"|"$/g, '') : '';
+        
+        result.push({
+          github: clean(values[0]),
+          vscode: clean(values[1]),
+          qwen: clean(values[2]),
+          pages: clean(values[3]),
+          learn: clean(values[4]),
+          difficulty: clean(values[5]),
+          timestamp: clean(values[6])
         });
-        result.push(row);
       }
       return result;
     }
@@ -318,8 +317,7 @@
 
       } catch (error) {
         document.getElementById('loadingState').innerHTML = `
-          <p style="color:var(--accent-red);">❌ 讀取失敗：${error.message}</p>
-          <p style="margin-top:10px;">請確認 Google Sheet 是否已「發布到網路」。</p>`;
+          <p style="color:var(--accent-red);">❌ 讀取失敗：${error.message}</p>`;
       }
     }
 
@@ -333,9 +331,7 @@
         q.options.forEach(o => counts[o] = 0);
         
         responses.forEach(r => {
-          // 嘗試匹配欄位名稱 (支援中文或英文 key)
-          const val = r[key] || r[Object.keys(r).find(k => k.includes(key))];
-          if (val && counts.hasOwnProperty(val)) counts[val]++;
+          if (r[key] && counts.hasOwnProperty(r[key])) counts[r[key]]++;
         });
 
         const max = Math.max(...Object.values(counts), 1);
@@ -365,20 +361,13 @@
       let hasLearn = false, hasDiff = false;
 
       responses.forEach((r, i) => {
-        // 自動偵測欄位名稱
-        const learnKey = Object.keys(r).find(k => k.includes('期望') || k.includes('Learn'));
-        const diffKey = Object.keys(r).find(k => k.includes('困難') || k.includes('Difficulty'));
-
-        const learnVal = learnKey ? r[learnKey] : '';
-        const diffVal = diffKey ? r[diffKey] : '';
-
-        if (learnVal) {
+        if (r.learn) {
           hasLearn = true;
-          learnList.innerHTML += `<div class="open-item"><div class="index">Response #${i + 1}</div><div class="text">${escapeHtml(learnVal)}</div></div>`;
+          learnList.innerHTML += `<div class="open-item"><div class="index">Response #${i + 1}</div><div class="text">${escapeHtml(r.learn)}</div></div>`;
         }
-        if (diffVal) {
+        if (r.difficulty) {
           hasDiff = true;
-          difficultyList.innerHTML += `<div class="open-item"><div class="index">Response #${i + 1}</div><div class="text">${escapeHtml(diffVal)}</div></div>`;
+          difficultyList.innerHTML += `<div class="open-item"><div class="index">Response #${i + 1}</div><div class="text">${escapeHtml(r.difficulty)}</div></div>`;
         }
       });
 
@@ -392,7 +381,6 @@
       return div.innerHTML;
     }
 
-    // 初始載入
     loadData();
   </script>
 </body>

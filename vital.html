@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生理徵象量測記錄</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a25;
+      --border-color: #2a2a3a;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --text-muted: #555568;
+      --accent-blue: #38bdf8;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-yellow: #f59e0b;
+      --gradient-primary: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+    }
+    body {
+      font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+      background: var(--bg-primary); color: var(--text-primary);
+      min-height: 100vh; line-height: 1.6;
+    }
+    body::before {
+      content: ''; position: fixed; top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 20% 20%, rgba(56,189,248,0.07) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 80%, rgba(129,140,248,0.06) 0%, transparent 50%);
+      z-index: -1;
+    }
+    .container { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2);
+      color: var(--accent-blue); padding: 6px 14px; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 500; margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: 2rem; font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 8px;
+    }
+    .header p { color: var(--text-secondary); font-size: 0.9rem; }
+
+    /* Card */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 0.8rem; font-weight: 600; color: var(--accent-blue);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+    }
+
+    /* Field row */
+    .field-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;
+    }
+    .field-row.single { grid-template-columns: 1fr; }
+    .field-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 0.8rem; font-weight: 500; color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .field label .range {
+      font-size: 0.75rem; color: var(--text-muted); font-weight: 400;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%; padding: 11px 14px; background: var(--bg-secondary);
+      border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+      color: var(--text-primary); font-size: 0.95rem; font-family: inherit;
+      transition: border-color 0.2s; appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent-blue); }
+
+    /* Status indicator */
+    .status-badge {
+      font-size: 0.72rem; font-weight: 600; padding: 2px 8px;
+      border-radius: 20px; display: inline-block; margin-top: 4px;
+      min-height: 20px;
+    }
+    .status-normal { background: rgba(16,185,129,0.15); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); }
+    .status-abnormal { background: rgba(239,68,68,0.15); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3); }
+    .status-empty { background: transparent; color: transparent; border: 1px solid transparent; }
+
+    /* BMI display */
+    .bmi-display {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); padding: 11px 14px;
+      font-size: 1.1rem; font-weight: 700; color: var(--accent-blue);
+      min-height: 44px; display: flex; align-items: center;
+    }
+    .bmi-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Submit */
+    .btn-submit {
+      width: 100%; padding: 16px; background: var(--gradient-primary);
+      border: none; border-radius: var(--radius-md); color: white;
+      font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.3s; box-shadow: 0 4px 20px rgba(56,189,248,0.25);
+      margin-top: 8px;
+    }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(56,189,248,0.35); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .message { text-align: center; margin-top: 16px; padding: 14px; border-radius: var(--radius-sm); font-size: 0.9rem; }
+    .message.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent-green); }
+    .message.error   { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: var(--accent-red); }
+
+    /* Warning summary */
+    #warnBox {
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px;
+      display: none;
+    }
+    #warnBox h4 { color: var(--accent-red); font-size: 0.875rem; margin-bottom: 8px; }
+    #warnList { list-style: none; }
+    #warnList li { font-size: 0.85rem; color: var(--text-secondary); padding: 3px 0; }
+    #warnList li::before { content: '⚠ '; color: var(--accent-yellow); }
+
+    .nav-link { text-align: center; margin-top: 32px; }
+    .nav-link a { color: var(--accent-blue); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px; }
+      .field-row { grid-template-columns: 1fr; }
+      .field-row.triple { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="badge">🩺 課堂練習</div>
+    <h1>生理徵象量測記錄</h1>
+    <p>請依量測結果填寫，異常數值會自動標示提醒</p>
+  </div>
+
+  <form id="vitalForm">
+
+    <!-- 學員資訊 -->
+    <div class="card">
+      <div class="card-title">學員資訊</div>
+      <div class="field-row">
+        <div class="field">
+          <label>學員姓名</label>
+          <input type="text" id="name" name="name" placeholder="請輸入姓名">
+        </div>
+        <div class="field">
+          <label>學號 / 編號</label>
+          <input type="text" id="sid" name="sid" placeholder="選填">
+        </div>
+      </div>
+    </div>
+
+    <!-- 生命徵象 -->
+    <div class="card">
+      <div class="card-title">生命徵象</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>
+            體溫 (°C)
+            <span class="range">正常：36.1–37.2</span>
+          </label>
+          <input type="number" id="temp" name="temp" step="0.1" min="34" max="42" placeholder="例：36.5" oninput="check('temp')">
+          <span class="status-badge status-empty" id="st-temp"></span>
+        </div>
+        <div class="field">
+          <label>
+            脈搏 (次/分)
+            <span class="range">正常：60–100</span>
+          </label>
+          <input type="number" id="pulse" name="pulse" step="1" min="20" max="250" placeholder="例：72" oninput="check('pulse')">
+          <span class="status-badge status-empty" id="st-pulse"></span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>
+            收縮壓 (mmHg)
+            <span class="range">正常：&lt;120</span>
+          </label>
+          <input type="number" id="sbp" name="sbp" step="1" min="50" max="250" placeholder="例：118" oninput="check('sbp')">
+          <span class="status-badge status-empty" id="st-sbp"></span>
+        </div>
+        <div class="field">
+          <label>
+            舒張壓 (mmHg)
+            <span class="range">正常：&lt;80</span>
+          </label>
+          <input type="number" id="dbp" name="dbp" step="1" min="30" max="150" placeholder="例：76" oninput="check('dbp')">
+          <span class="status-badge status-empty" id="st-dbp"></span>
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label>呼吸型態</label>
+          <select id="breath" name="breath">
+            <option value="">請選擇</option>
+            <option value="規則">規則</option>
+            <option value="費力">費力</option>
+            <option value="淺快">淺快</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label>
+            血糖 (mg/dL)
+            <span class="range">空腹正常：70–100</span>
+          </label>
+          <input type="number" id="glucose" name="glucose" step="1" min="20" max="600" placeholder="例：95（空腹）" oninput="check('glucose')">
+          <span class="status-badge status-empty" id="st-glucose"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 身體組成 -->
+    <div class="card">
+      <div class="card-title">身體組成</div>
+      <div class="field-row triple">
+        <div class="field">
+          <label>身高 (cm)</label>
+          <input type="number" id="height" name="height" step="0.1" min="100" max="250" placeholder="例：165" oninput="calcBMI()">
+        </div>
+        <div class="field">
+          <label>體重 (kg)</label>
+          <input type="number" id="weight" name="weight" step="0.1" min="20" max="300" placeholder="例：60" oninput="calcBMI()">
+        </div>
+        <div class="field">
+          <label>BMI <span class="range">自動換算</span></label>
+          <div class="bmi-display" id="bmiDisplay">—</div>
+          <div class="bmi-label" id="bmiLabel"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 異常提醒 -->
+    <div id="warnBox">
+      <h4>⚠ 異常數值提醒</h4>
+      <ul id="warnList"></ul>
+    </div>
+
+    <button type="submit" class="btn-submit" id="submitBtn">送出記錄</button>
+    <div id="message" class="message" style="display:none;"></div>
+  </form>
+
+  <div class="nav-link" style="margin-top:24px;">
+    <a href="pre.html">← 返回課前問卷</a>
+  </div>
+</div>
+
+<script>
+  const VITAL_SCRIPT_URL = 'https://script.google.com/macros/s/REPLACE_VITAL_GAS_URL/exec';
+
+  /* ---- 正常範圍定義 ---- */
+  const rules = {
+    temp:    { min: 36.1, max: 37.2, label: '體溫' },
+    pulse:   { min: 60,   max: 100,  label: '脈搏' },
+    sbp:     { min: 0,    max: 120,  label: '收縮壓' },
+    dbp:     { min: 0,    max: 80,   label: '舒張壓' },
+    glucose: { min: 70,   max: 100,  label: '血糖（空腹參考）' }
+  };
+
+  function check(field) {
+    const input = document.getElementById(field);
+    const badge = document.getElementById('st-' + field);
+    const val = parseFloat(input.value);
+    if (input.value === '' || isNaN(val)) {
+      badge.className = 'status-badge status-empty';
+      badge.textContent = '';
+    } else {
+      const r = rules[field];
+      const ok = val >= r.min && val <= r.max;
+      badge.className = 'status-badge ' + (ok ? 'status-normal' : 'status-abnormal');
+      badge.textContent = ok ? '正常' : '異常';
+    }
+    updateWarn();
+  }
+
+  function calcBMI() {
+    const h = parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('weight').value);
+    const display = document.getElementById('bmiDisplay');
+    const lbl = document.getElementById('bmiLabel');
+    if (h > 0 && w > 0) {
+      const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+      display.textContent = bmi;
+      let cat = '';
+      if (bmi < 18.5)      cat = '體重過輕';
+      else if (bmi < 24)   cat = '正常範圍';
+      else if (bmi < 27)   cat = '過重';
+      else if (bmi < 30)   cat = '輕度肥胖';
+      else if (bmi < 35)   cat = '中度肥胖';
+      else                  cat = '重度肥胖';
+      const isNormal = bmi >= 18.5 && bmi < 24;
+      display.style.color = isNormal ? 'var(--accent-green)' : 'var(--accent-yellow)';
+      lbl.textContent = cat;
+      lbl.style.color = isNormal ? 'var(--accent-green)' : 'var(--accent-yellow)';
+    } else {
+      display.textContent = '—';
+      display.style.color = 'var(--accent-blue)';
+      lbl.textContent = '';
+    }
+    updateWarn();
+  }
+
+  function updateWarn() {
+    const warns = [];
+    Object.keys(rules).forEach(field => {
+      const input = document.getElementById(field);
+      const val = parseFloat(input.value);
+      if (!isNaN(val) && input.value !== '') {
+        const r = rules[field];
+        if (val < r.min || val > r.max) {
+          warns.push(`${r.label}：${val}（正常 ${r.min}${r.max < 9999 ? '–' + r.max : ' 以下'}）`);
+        }
+      }
+    });
+
+    // BMI check
+    const bmiEl = document.getElementById('bmiDisplay');
+    const bmiVal = parseFloat(bmiEl.textContent);
+    if (!isNaN(bmiVal) && (bmiVal < 18.5 || bmiVal >= 24)) {
+      warns.push(`BMI：${bmiVal}（正常 18.5–23.9）`);
+    }
+
+    const box = document.getElementById('warnBox');
+    const list = document.getElementById('warnList');
+    if (warns.length > 0) {
+      list.innerHTML = warns.map(w => `<li>${w}</li>`).join('');
+      box.style.display = 'block';
+    } else {
+      box.style.display = 'none';
+    }
+  }
+
+  /* ---- 送出 ---- */
+  document.getElementById('vitalForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    if (!name) { showMsg('error', '❌ 請填寫學員姓名。'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '送出中...';
+    hideMsg();
+
+    const h = parseFloat(document.getElementById('height').value) || null;
+    const w = parseFloat(document.getElementById('weight').value) || null;
+    const bmiRaw = (h && w) ? +(w / ((h / 100) ** 2)).toFixed(1) : null;
+
+    const data = {
+      name:      name,
+      sid:       document.getElementById('sid').value.trim(),
+      temp:      document.getElementById('temp').value,
+      pulse:     document.getElementById('pulse').value,
+      sbp:       document.getElementById('sbp').value,
+      dbp:       document.getElementById('dbp').value,
+      breath:    document.getElementById('breath').value,
+      glucose:   document.getElementById('glucose').value,
+      height:    document.getElementById('height').value,
+      weight:    document.getElementById('weight').value,
+      bmi:       bmiRaw !== null ? String(bmiRaw) : '',
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      await fetch(VITAL_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(data)
+      });
+      showMsg('success', '✅ 記錄送出成功！');
+      e.target.reset();
+      ['temp','pulse','sbp','dbp','glucose'].forEach(f => {
+        document.getElementById('st-' + f).className = 'status-badge status-empty';
+        document.getElementById('st-' + f).textContent = '';
+      });
+      document.getElementById('bmiDisplay').textContent = '—';
+      document.getElementById('bmiDisplay').style.color = 'var(--accent-blue)';
+      document.getElementById('bmiLabel').textContent = '';
+      document.getElementById('warnBox').style.display = 'none';
+    } catch (err) {
+      showMsg('error', '❌ 送出失敗，請確認網路後重試。');
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '送出記錄';
+    }
+  });
+
+  function showMsg(type, text) {
+    const m = document.getElementById('message');
+    m.className = 'message ' + type;
+    m.textContent = text;
+    m.style.display = 'block';
+  }
+  function hideMsg() { document.getElementById('message').style.display = 'none'; }
+</script>
+</body>
+</html>

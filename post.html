@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>課後問卷調查</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a25;
+      --border-color: #2a2a3a;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --text-muted: #555568;
+      --accent-primary: #10b981;
+      --accent-red: #ef4444;
+      --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+    }
+    body {
+      font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+      background: var(--bg-primary); color: var(--text-primary);
+      min-height: 100vh; line-height: 1.6;
+    }
+    body::before {
+      content: ''; position: fixed; top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 30% 20%, rgba(16,185,129,0.07) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 80%, rgba(5,150,105,0.05) 0%, transparent 50%);
+      z-index: -1;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+      color: var(--accent-primary); padding: 6px 14px; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 500; margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: 2rem; font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 8px;
+    }
+    .header p { color: var(--text-secondary); font-size: 0.95rem; }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px;
+    }
+    .question-title {
+      font-size: 1rem; font-weight: 600; margin-bottom: 16px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .question-title::before {
+      content: ''; flex-shrink: 0; width: 4px; height: 20px; margin-top: 2px;
+      background: var(--gradient-primary); border-radius: 2px;
+    }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-label {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color); cursor: pointer;
+      transition: all 0.2s; font-size: 0.9rem; color: var(--text-secondary);
+    }
+    .option-label:hover { border-color: var(--accent-primary); color: var(--text-primary); background: rgba(16,185,129,0.05); }
+    .option-label input[type="radio"] { display: none; }
+    .option-label.selected { border-color: var(--accent-primary); color: var(--text-primary); background: rgba(16,185,129,0.1); }
+    .radio-dot {
+      width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border-color);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .option-label.selected .radio-dot { border-color: var(--accent-primary); background: var(--accent-primary); }
+    .option-label.selected .radio-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: white; }
+    textarea {
+      width: 100%; min-height: 100px; background: var(--bg-secondary);
+      border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+      color: var(--text-primary); padding: 12px 16px; font-size: 0.9rem;
+      font-family: inherit; resize: vertical; transition: border-color 0.2s;
+    }
+    textarea:focus { outline: none; border-color: var(--accent-primary); }
+    textarea::placeholder { color: var(--text-muted); }
+    .btn-submit {
+      width: 100%; padding: 16px; background: var(--gradient-primary);
+      border: none; border-radius: var(--radius-md); color: white;
+      font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.3s; box-shadow: 0 4px 20px rgba(16,185,129,0.3);
+      margin-top: 8px;
+    }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(16,185,129,0.4); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .message { text-align: center; margin-top: 16px; padding: 14px; border-radius: var(--radius-sm); font-size: 0.9rem; }
+    .message.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent-primary); }
+    .message.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--accent-red); }
+    .nav-link { text-align: center; margin-top: 32px; }
+    .nav-link a { color: var(--accent-primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+    @media (max-width: 768px) { .container { padding: 24px 16px; } .header h1 { font-size: 1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">✅ 課後問卷</div>
+      <h1>課程後測調查</h1>
+      <p>請根據今天的課程體驗如實填寫，幫助我們持續改善</p>
+    </div>
+
+    <form id="surveyForm">
+      <div class="card">
+        <div class="question-title">課程內容理解程度</div>
+        <div class="options" data-name="understanding">
+          <label class="option-label"><input type="radio" name="understanding" value="完全聽不懂"><span class="radio-dot"></span>完全聽不懂</label>
+          <label class="option-label"><input type="radio" name="understanding" value="部分理解"><span class="radio-dot"></span>部分理解</label>
+          <label class="option-label"><input type="radio" name="understanding" value="大部分理解"><span class="radio-dot"></span>大部分理解</label>
+          <label class="option-label"><input type="radio" name="understanding" value="完全理解並能應用"><span class="radio-dot"></span>完全理解並能應用</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="question-title">課程實用性</div>
+        <div class="options" data-name="usefulness">
+          <label class="option-label"><input type="radio" name="usefulness" value="沒什麼幫助"><span class="radio-dot"></span>沒什麼幫助</label>
+          <label class="option-label"><input type="radio" name="usefulness" value="有一些幫助"><span class="radio-dot"></span>有一些幫助</label>
+          <label class="option-label"><input type="radio" name="usefulness" value="很有幫助"><span class="radio-dot"></span>很有幫助</label>
+          <label class="option-label"><input type="radio" name="usefulness" value="對我非常有價值"><span class="radio-dot"></span>對我非常有價值</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="question-title">課程節奏</div>
+        <div class="options" data-name="pace">
+          <label class="option-label"><input type="radio" name="pace" value="太快"><span class="radio-dot"></span>太快</label>
+          <label class="option-label"><input type="radio" name="pace" value="剛好"><span class="radio-dot"></span>剛好</label>
+          <label class="option-label"><input type="radio" name="pace" value="太慢"><span class="radio-dot"></span>太慢</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="question-title">工具與技術熟悉度提升</div>
+        <div class="options" data-name="skill">
+          <label class="option-label"><input type="radio" name="skill" value="沒有提升"><span class="radio-dot"></span>沒有提升</label>
+          <label class="option-label"><input type="radio" name="skill" value="有一點提升"><span class="radio-dot"></span>有一點提升</label>
+          <label class="option-label"><input type="radio" name="skill" value="提升很多"><span class="radio-dot"></span>提升很多</label>
+          <label class="option-label"><input type="radio" name="skill" value="已經能獨立操作"><span class="radio-dot"></span>已經能獨立操作</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="question-title">課程中最喜歡的部分</div>
+        <textarea name="best" placeholder="請分享你最喜歡的環節..."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="question-title">課程中最需要改進的地方</div>
+        <textarea name="improve" placeholder="請提供你的改進建議..."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="question-title">你希望未來課程增加哪些主題？</div>
+        <textarea name="future" placeholder="請描述你感興趣的主題..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">提交課後問卷</button>
+      <div id="message" class="message" style="display:none;"></div>
+    </form>
+
+    <div class="nav-link">
+      <a href="pre.html">← 返回課前問卷</a>
+    </div>
+  </div>
+
+  <script>
+    const POST_SCRIPT_URL = 'https://script.google.com/macros/s/REPLACE_POST_GAS_URL/exec';
+
+    // 選項點選樣式
+    document.querySelectorAll('.options').forEach(group => {
+      group.querySelectorAll('.option-label').forEach(label => {
+        label.addEventListener('click', () => {
+          group.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+          label.classList.add('selected');
+        });
+      });
+    });
+
+    const form = document.getElementById('surveyForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const required = ['understanding', 'usefulness', 'pace', 'skill'];
+      for (const key of required) {
+        if (!formData.get(key)) {
+          showMessage('error', '❌ 請完成所有單選題再送出。');
+          return;
+        }
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '提交中...';
+      hideMessage();
+
+      const data = {
+        understanding: formData.get('understanding'),
+        usefulness:    formData.get('usefulness'),
+        pace:          formData.get('pace'),
+        skill:         formData.get('skill'),
+        best:          formData.get('best') || '',
+        improve:       formData.get('improve') || '',
+        future:        formData.get('future') || '',
+        timestamp:     new Date().toISOString()
+      };
+
+      try {
+        await fetch(POST_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(data)
+        });
+        showMessage('success', '✅ 課後問卷提交成功！感謝你的回饋。');
+        form.reset();
+        document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      } catch (err) {
+        showMessage('error', '❌ 提交失敗，請確認網路後重試。');
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '提交課後問卷';
+      }
+    });
+
+    function showMessage(type, text) {
+      messageDiv.className = 'message ' + type;
+      messageDiv.textContent = text;
+      messageDiv.style.display = 'block';
+    }
+    function hideMessage() {
+      messageDiv.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

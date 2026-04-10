@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>後台管理 - 問卷統計</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      font-size: 2em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* 登入區域 */
+    .login-box {
+      background: white;
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+
+    .login-box input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: transform 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-msg {
+      color: #dc3545;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* 管理後台內容 */
+    .admin-content {
+      display: none;
+    }
+
+    .action-bar {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .btn-refresh {
+      background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+
+    .btn-logout {
+      background: #dc3545;
+    }
+
+    .total-count {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .total-count p {
+      color: #666;
+      font-size: 1.1em;
+    }
+
+    .total-count h2 {
+      color: #667eea;
+      font-size: 3em;
+      margin-top: 10px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .stat-card h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.2em;
+    }
+
+    .stat-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .stat-table th,
+    .stat-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .stat-table th {
+      background: #f8f9fa;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .stat-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .stat-bar {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 4px;
+      transition: width 0.5s;
+    }
+
+    .summary {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
+    }
+
+    .summary h2 {
+      margin-bottom: 20px;
+      color: #333;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .summary-item {
+      background: #f8f9fa;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    .summary-item strong {
+      color: #667eea;
+    }
+
+    .empty-msg {
+      color: #666;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .nav-link {
+      text-align: center;
+      margin-top: 30px;
+      color: white;
+    }
+
+    .nav-link a {
+      color: white;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-bar {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 後台管理 - 問卷統計</h1>
+
+    <!-- 登入區域 -->
+    <div id="loginSection" class="login-box">
+      <h2>🔐 講師登入</h2>
+      <input type="text" id="usernameInput" placeholder="請輸入帳號">
+      <input type="password" id="passwordInput" placeholder="請輸入密碼">
+      <button class="btn" id="loginBtn" onclick="login()">登入</button>
+      <p id="errorMsg" class="error-msg">帳號或密碼錯誤</p>
+    </div>
+
+    <!-- 管理後台內容 -->
+    <div id="adminSection" class="admin-content">
+      <div class="action-bar">
+        <button class="btn btn-refresh" onclick="loadData()">🔄 重新載入</button>
+        <button class="btn btn-download" onclick="downloadCSV()">📥 下載 CSV</button>
+        <button class="btn btn-logout" onclick="logout()">🚪 登出</button>
+      </div>
+
+      <div class="total-count">
+        <p>總提交數</p>
+        <h2 id="totalCount">0</h2>
+      </div>
+
+      <div class="stats-grid" id="statsGrid">
+        <!-- 統計卡片將由 JavaScript 生成 -->
+      </div>
+
+      <div class="summary">
+        <h2>💭 期望學習內容</h2>
+        <div id="learnList"></div>
+      </div>
+
+      <div class="summary">
+        <h2>⚠️ 寫程式困難</h2>
+        <div id="difficultyList"></div>
+      </div>
+    </div>
+
+    <div class="nav-link">
+      <a href="index.html">← 返回問卷填寫頁面</a>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'survey_responses';
+    const ADMIN_USERNAME = 'admin';
+    const ADMIN_PASSWORD = '123456';
+
+    // 題目與選項定義
+    const questions = {
+      github: {
+        title: 'GitHub 帳號註冊與使用',
+        options: ['完全不熟悉', '聽過但沒用過', '曾經註冊過帳號', '熟悉 Repo 建立與 Push']
+      },
+      vscode: {
+        title: 'VS Code 安裝與操作',
+        options: ['沒安裝過 VS Code', '安裝過但不常用', '熟悉基本操作（開檔案、編輯程式）', '熟悉插件安裝與設定']
+      },
+      qwen: {
+        title: 'Qwen Code 擴充元件',
+        options: ['沒聽過', '聽過但沒用過', '安裝過但不熟悉功能', '熟悉並常用']
+      },
+      pages: {
+        title: 'GitHub Pages 部署網站',
+        options: ['完全不熟悉', '知道有這功能但沒用過', '曾經部署過網站', '熟悉部署流程並能獨立完成']
+      }
+    };
+
+    // 登入功能
+    function login() {
+      const username = document.getElementById('usernameInput').value;
+      const password = document.getElementById('passwordInput').value;
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('adminSection').style.display = 'block';
+        errorMsg.style.display = 'none';
+        loadData();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    // 登出功能
+    function logout() {
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('adminSection').style.display = 'none';
+      document.getElementById('usernameInput').value = '';
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('statsGrid').innerHTML = '';
+    }
+
+    // 載入資料
+    function loadData() {
+      const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      
+      document.getElementById('totalCount').textContent = responses.length;
+      
+      if (responses.length === 0) {
+        document.getElementById('statsGrid').innerHTML = '<p class="empty-msg">目前尚無問卷資料</p>';
+        document.getElementById('learnList').innerHTML = '<p class="empty-msg">目前尚無資料</p>';
+        document.getElementById('difficultyList').innerHTML = '<p class="empty-msg">目前尚無資料</p>';
+        return;
+      }
+
+      renderStats(responses);
+      renderOpenQuestions(responses);
+    }
+
+    // 渲染統計表格
+    function renderStats(responses) {
+      const grid = document.getElementById('statsGrid');
+      grid.innerHTML = '';
+
+      Object.keys(questions).forEach(key => {
+        const question = questions[key];
+        const counts = {};
+        question.options.forEach(opt => counts[opt] = 0);
+
+        responses.forEach(r => {
+          if (counts.hasOwnProperty(r[key])) {
+            counts[r[key]]++;
+          }
+        });
+
+        const maxCount = Math.max(...Object.values(counts), 1);
+
+        let tableHTML = `
+          <div class="stat-card">
+            <h3>${question.title}</h3>
+            <table class="stat-table">
+              <thead>
+                <tr>
+                  <th>選項</th>
+                  <th>數量</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        question.options.forEach(opt => {
+          const count = counts[opt];
+          const percentage = (count / maxCount) * 100;
+          tableHTML += `
+            <tr>
+              <td>
+                ${opt}
+                <div class="stat-bar">
+                  <div class="stat-bar-fill" style="width: ${percentage}%"></div>
+                </div>
+              </td>
+              <td><strong>${count}</strong></td>
+            </tr>
+          `;
+        });
+
+        tableHTML += `
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        grid.innerHTML += tableHTML;
+      });
+    }
+
+    // 渲染開放式問題
+    function renderOpenQuestions(responses) {
+      const learnList = document.getElementById('learnList');
+      const difficultyList = document.getElementById('difficultyList');
+
+      learnList.innerHTML = '';
+      difficultyList.innerHTML = '';
+
+      let hasLearn = false;
+      let hasDifficulty = false;
+
+      responses.forEach((r, index) => {
+        if (r.learn) {
+          hasLearn = true;
+          const item = document.createElement('div');
+          item.className = 'summary-item';
+          item.innerHTML = `<strong>#${index + 1}:</strong> ${escapeHtml(r.learn)}`;
+          learnList.appendChild(item);
+        }
+
+        if (r.difficulty) {
+          hasDifficulty = true;
+          const item = document.createElement('div');
+          item.className = 'summary-item';
+          item.innerHTML = `<strong>#${index + 1}:</strong> ${escapeHtml(r.difficulty)}`;
+          difficultyList.appendChild(item);
+        }
+      });
+
+      if (!hasLearn) {
+        learnList.innerHTML = '<p class="empty-msg">目前尚無資料</p>';
+      }
+
+      if (!hasDifficulty) {
+        difficultyList.innerHTML = '<p class="empty-msg">目前尚無資料</p>';
+      }
+    }
+
+    // 下載 CSV
+    function downloadCSV() {
+      const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      
+      if (responses.length === 0) {
+        alert('目前沒有資料可下載');
+        return;
+      }
+
+      const headers = ['GitHub', 'VSCode', 'Qwen', 'Pages', '期望學習內容', '寫程式困難', '提交時間'];
+      const csvRows = [headers.join(',')];
+      
+      responses.forEach(r => {
+        const row = [
+          escapeCSV(r.github),
+          escapeCSV(r.vscode),
+          escapeCSV(r.qwen),
+          escapeCSV(r.pages),
+          escapeCSV(r.learn),
+          escapeCSV(r.difficulty),
+          escapeCSV(r.timestamp)
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      const csvContent = csvRows.join('\n');
+      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `survey_results_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+      
+      URL.revokeObjectURL(url);
+    }
+
+    // CSV 跳脫函數
+    function escapeCSV(field) {
+      if (!field) return '';
+      const str = String(field);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    }
+
+    // HTML 跳脫
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Enter 鍵登入
+    document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        login();
+      }
+    });
+
+    document.getElementById('usernameInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('passwordInput').focus();
+      }
+    });
+  </script>
+</body>
+</html>

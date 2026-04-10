@@ -90,40 +90,22 @@
       border-color: #667eea;
     }
 
-    .btn-group {
-      display: flex;
-      gap: 15px;
-      margin-top: 30px;
-    }
-
     .btn {
-      flex: 1;
+      display: block;
+      width: 100%;
       padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
       border: none;
       border-radius: 10px;
-      font-size: 1.1em;
+      font-size: 1.2em;
       cursor: pointer;
       transition: transform 0.3s, box-shadow 0.3s;
     }
 
-    .btn-submit {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .btn-submit:hover:not(:disabled) {
+    .btn:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-download {
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-      color: white;
-    }
-
-    .btn-download:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(40, 167, 69, 0.4);
     }
 
     .btn:disabled {
@@ -246,10 +228,7 @@
         <textarea name="difficulty" placeholder="請描述你遇到的困難..."></textarea>
       </div>
 
-      <div class="btn-group">
-        <button type="submit" class="btn btn-submit" id="submitBtn">提交問卷</button>
-        <button type="button" class="btn btn-download" id="downloadBtn">📥 下載 CSV</button>
-      </div>
+      <button type="submit" class="btn" id="submitBtn">提交問卷</button>
 
       <div id="message" class="message"></div>
     </form>
@@ -263,7 +242,6 @@
     const STORAGE_KEY = 'survey_responses';
     const form = document.getElementById('surveyForm');
     const submitBtn = document.getElementById('submitBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
     const messageDiv = document.getElementById('message');
 
     // 提交表單
@@ -305,60 +283,6 @@
         submitBtn.textContent = '提交問卷';
       }
     });
-
-    // 下載 CSV
-    downloadBtn.addEventListener('click', () => {
-      const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      
-      if (responses.length === 0) {
-        messageDiv.className = 'message error';
-        messageDiv.textContent = '⚠️ 目前沒有資料可下載';
-        return;
-      }
-
-      // CSV 標題
-      const headers = ['GitHub', 'VSCode', 'Qwen', 'Pages', '期望學習內容', '寫程式困難', '提交時間'];
-      
-      // CSV 內容
-      const csvRows = [headers.join(',')];
-      
-      responses.forEach(r => {
-        const row = [
-          escapeCSV(r.github),
-          escapeCSV(r.vscode),
-          escapeCSV(r.qwen),
-          escapeCSV(r.pages),
-          escapeCSV(r.learn),
-          escapeCSV(r.difficulty),
-          escapeCSV(r.timestamp)
-        ];
-        csvRows.push(row.join(','));
-      });
-
-      const csvContent = csvRows.join('\n');
-      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `survey_results_${new Date().toISOString().slice(0,10)}.csv`;
-      link.click();
-      
-      URL.revokeObjectURL(url);
-
-      messageDiv.className = 'message success';
-      messageDiv.textContent = `✅ 已下載 ${responses.length} 筆資料`;
-    });
-
-    // CSV 跳脫函數
-    function escapeCSV(field) {
-      if (!field) return '';
-      const str = String(field);
-      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-        return `"${str.replace(/"/g, '""')}"`;
-      }
-      return str;
-    }
   </script>
 </body>
 </html>

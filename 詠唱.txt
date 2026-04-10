@@ -3,7 +3,7 @@
 =====================================
 【首頁】index.html
 =====================================
-- 學員入口：直接選擇填寫 課前問卷 / 課後問卷 / 生理徵象量測（不需密碼）
+- 學員入口：直接選擇填寫 課前問卷 / 課後問卷 / 生命徵象量測（不需密碼）
 - 講師入口：輸入帳號密碼登入後台
   帳號：admin　密碼：admin123456
 - 登入成功後跳轉 admin.html（使用 sessionStorage 記住登入狀態）
@@ -104,7 +104,7 @@ https://docs.google.com/spreadsheets/d/1iqpw2Hqo3ErcMQ7ENUdy_kaeWoiqHPdvD7fs8LAD
 https://script.google.com/macros/s/AKfycbxPxyjS-Qo0zBEEeugFHzrsGyvB5hRU3HYMFbsdn8kCye06fBsXk3fLAeUIK2BQLM1d/exec
 
 =====================================
-【生理徵象量測記錄】vital.html
+【生命徵象量測】vital.html
 =====================================
 
 課堂練習用，學員填寫量測數值，異常值自動標紅提示。
@@ -122,10 +122,10 @@ https://script.google.com/macros/s/AKfycbxPxyjS-Qo0zBEEeugFHzrsGyvB5hRU3HYMFbsdn
 送出資料欄位（JSON key）：
 temp, pulse, sbp, dbp, breath, glucose, height, weight, bmi, timestamp
 
-Google Sheets（生理徵象）：
+Google Sheets（生命徵象量測）：
 https://docs.google.com/spreadsheets/d/1vWR_aCxBjTE0kvITDklJ4NaOOT_eo-f4yvptIsq3wRk/edit
 
-生理徵象 GAS URL：
+生命徵象量測 GAS URL：
 https://script.google.com/macros/s/AKfycbx_XM53QJf5fty5IQUKTg7KrsFRiutr6Qg7TK2K_lbyVecmKEvgveQPCnXGG5ibcLotjQ/exec
 
 =====================================
@@ -160,6 +160,6 @@ https://script.google.com/macros/s/AKfycbx_XM53QJf5fty5IQUKTg7KrsFRiutr6Qg7TK2K_
 index.html  首頁（學員 / 講師入口）
 pre.html    課前問卷
 post.html   課後問卷
-vital.html  生理徵象量測記錄（課堂練習）
+vital.html  生命徵象量測（課堂練習）
 admin.html  後台（登入 + 課前/課後統計）
 詠唱.txt    本說明文件（開發規格與流程記錄）

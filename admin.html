@@ -248,7 +248,7 @@
 
   <script>
     const ADMIN_USER = 'admin';
-    const ADMIN_PASS = '123456';
+    const ADMIN_PASS = 'admin123456';
     const PRE_SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbyXDP5xSEVw9-KQxY6_gQLtCL6FxyhUUvBziVr5AmCZlBF5i2EN-YeWxtTThEXWWGCxFw/exec';
     const POST_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPxyjS-Qo0zBEEeugFHzrsGyvB5hRU3HYMFbsdn8kCye06fBsXk3fLAeUIK2BQLM1d/exec';
 
@@ -267,11 +267,19 @@
     };
 
     // ===== LOGIN =====
+    // 從首頁登入過來，直接進入後台
+    if (sessionStorage.getItem('adminAuth') === '1') {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashPage').style.display = 'block';
+      loadAll();
+    }
+
     document.getElementById('loginForm').addEventListener('submit', e => {
       e.preventDefault();
       const u = document.getElementById('username').value.trim();
       const p = document.getElementById('password').value;
       if (u === ADMIN_USER && p === ADMIN_PASS) {
+        sessionStorage.setItem('adminAuth', '1');
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('dashPage').style.display = 'block';
         loadAll();
@@ -281,10 +289,8 @@
     });
 
     function logout() {
-      document.getElementById('dashPage').style.display = 'none';
-      document.getElementById('loginPage').style.display = 'flex';
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
+      sessionStorage.removeItem('adminAuth');
+      window.location.href = 'index.html';
     }
 
     // ===== TABS =====

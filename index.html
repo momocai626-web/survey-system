@@ -3,400 +3,249 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>課程前測問卷調查</title>
+  <title>課程系統</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     :root {
       --bg-primary: #0a0a0f;
       --bg-secondary: #12121a;
       --bg-card: #1a1a25;
-      --bg-input: #12121a;
       --border-color: #2a2a3a;
-      --border-focus: #6366f1;
       --text-primary: #f0f0f5;
       --text-secondary: #8888a0;
       --text-muted: #555568;
-      --accent-primary: #6366f1;
-      --accent-secondary: #8b5cf6;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
+      --gradient-purple: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      --gradient-green:  linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --gradient-blue:   linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      --gradient-orange: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
     }
-
     body {
-      font-family: 'Inter', 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      line-height: 1.6;
+      font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+      background: var(--bg-primary); color: var(--text-primary);
+      min-height: 100vh; display: flex; flex-direction: column;
     }
-
     body::before {
-      content: '';
-      position: fixed;
-      top: -50%; left: -50%;
+      content: ''; position: fixed; top: -50%; left: -50%;
       width: 200%; height: 200%;
       background:
-        radial-gradient(ellipse at 30% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 30%, rgba(99,102,241,0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(16,185,129,0.07) 0%, transparent 50%);
       z-index: -1;
     }
 
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 48px 24px;
+    /* ── Header ── */
+    .site-header {
+      text-align: center; padding: 60px 24px 40px;
     }
-
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
+    .site-header .logo {
+      width: 64px; height: 64px; margin: 0 auto 20px;
+      background: var(--gradient-purple); border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; box-shadow: 0 0 40px rgba(99,102,241,0.25);
     }
-
-    .header .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      color: var(--accent-primary);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin-bottom: 16px;
-    }
-
-    .header h1 {
-      font-size: 2rem;
-      font-weight: 800;
+    .site-header h1 {
+      font-size: 2rem; font-weight: 800;
       background: linear-gradient(135deg, #f0f0f5 0%, #8888a0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 8px;
     }
+    .site-header p { color: var(--text-muted); font-size: 0.9rem; }
 
-    .header p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
+    /* ── Main layout ── */
+    .main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 960px; margin: 0 auto; padding: 0 24px 60px; width: 100%; }
+
+    /* ── Panel ── */
+    .panel {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl); padding: 32px; display: flex; flex-direction: column; gap: 20px;
     }
+    .panel-header { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+    .panel-icon {
+      width: 48px; height: 48px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+    }
+    .icon-student { background: var(--gradient-green); box-shadow: 0 0 20px rgba(16,185,129,0.2); }
+    .icon-teacher { background: var(--gradient-orange); box-shadow: 0 0 20px rgba(245,158,11,0.2); }
+    .panel-title { font-size: 1.25rem; font-weight: 700; }
+    .panel-desc { font-size: 0.85rem; color: var(--text-muted); }
 
-    .question-card {
-      background: var(--bg-card);
+    .divider { height: 1px; background: var(--border-color); }
+
+    /* ── Survey cards (student) ── */
+    .survey-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px; border-radius: var(--radius-md);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      margin-bottom: 16px;
-      transition: all 0.3s;
+      text-decoration: none; color: var(--text-primary);
+      transition: all 0.2s; cursor: pointer;
     }
-
-    .question-card:hover {
-      border-color: rgba(99, 102, 241, 0.3);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.08);
+    .survey-card:hover { border-color: #4f4f6a; background: rgba(255,255,255,0.03); transform: translateY(-1px); }
+    .survey-card .card-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
     }
+    .card-pre   { background: rgba(99,102,241,0.15); }
+    .card-post  { background: rgba(16,185,129,0.15); }
+    .card-vital { background: rgba(56,189,248,0.15); }
+    .survey-card .card-text .title { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
+    .survey-card .card-text .sub   { font-size: 0.8rem; color: var(--text-muted); }
+    .survey-card .arrow { margin-left: auto; color: var(--text-muted); font-size: 1rem; }
 
-    .question-card h3 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    /* ── Teacher login ── */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); }
+    .form-group input {
+      padding: 12px 14px; background: var(--bg-secondary);
+      border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+      color: var(--text-primary); font-size: 0.95rem; font-family: inherit;
+      transition: border-color 0.2s;
     }
-
-    .question-card h3 .num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-      background: var(--gradient-primary);
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: white;
-      flex-shrink: 0;
+    .form-group input:focus { outline: none; border-color: #f59e0b; }
+    .btn-teacher {
+      width: 100%; padding: 13px;
+      background: var(--gradient-orange);
+      border: none; border-radius: var(--radius-sm); color: white;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.2s; box-shadow: 0 4px 16px rgba(245,158,11,0.25);
     }
+    .btn-teacher:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(245,158,11,0.35); }
+    .login-error { font-size: 0.85rem; color: #ef4444; text-align: center; display: none; }
 
-    .required {
-      color: var(--accent-red);
-      margin-left: 4px;
+    /* ── Modal (student role picker) ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      display: none; align-items: center; justify-content: center;
+      z-index: 100; padding: 24px;
+      backdrop-filter: blur(4px);
     }
-
-    .options label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      margin: 6px 0;
-      background: var(--bg-input);
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl); padding: 36px; width: 100%; max-width: 440px;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .modal p  { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px; }
+    .modal-cards { display: flex; flex-direction: column; gap: 12px; }
+    .modal-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px; border-radius: var(--radius-md);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-
-    .options label:hover {
-      border-color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.05);
-    }
-
-    .options input[type="radio"] {
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--border-color);
-      border-radius: 50%;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      position: relative;
-    }
-
-    .options input[type="radio"]:checked {
-      border-color: var(--accent-primary);
-      background: var(--accent-primary);
-    }
-
-    .options input[type="radio"]:checked::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 6px; height: 6px;
-      background: white;
-      border-radius: 50%;
-    }
-
-    .options label:has(input:checked) {
-      border-color: var(--accent-primary);
-      background: rgba(99, 102, 241, 0.08);
-      color: var(--text-primary);
-    }
-
-    textarea {
-      width: 100%;
-      padding: 14px 16px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      font-family: inherit;
-      resize: vertical;
-      min-height: 100px;
+      text-decoration: none; color: var(--text-primary);
       transition: all 0.2s;
     }
-
-    textarea:focus {
-      outline: none;
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    .modal-card:hover { transform: translateY(-2px); }
+    .modal-card.pre   { border-color: rgba(99,102,241,0.4);  background: rgba(99,102,241,0.08); }
+    .modal-card.post  { border-color: rgba(16,185,129,0.4);  background: rgba(16,185,129,0.08); }
+    .modal-card.vital { border-color: rgba(56,189,248,0.4);  background: rgba(56,189,248,0.08); }
+    .modal-card .mc-icon { font-size: 28px; }
+    .modal-card .mc-title { font-size: 1rem; font-weight: 600; }
+    .modal-card .mc-sub   { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .modal-close {
+      width: 100%; margin-top: 16px; padding: 10px;
+      background: transparent; border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); color: var(--text-muted);
+      font-size: 0.875rem; cursor: pointer; font-family: inherit; transition: all 0.2s;
     }
+    .modal-close:hover { color: var(--text-primary); border-color: #4f4f6a; }
 
-    textarea::placeholder {
-      color: var(--text-muted);
-    }
-
-    .btn-submit {
-      width: 100%;
-      padding: 16px;
-      background: var(--gradient-primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 24px;
-      font-family: inherit;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-    }
-
-    .btn-submit:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 30px rgba(99, 102, 241, 0.4);
-    }
-
-    .btn-submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .message {
-      text-align: center;
-      padding: 14px;
-      margin-top: 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      display: none;
-    }
-
-    .message.success {
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      color: var(--accent-green);
-      display: block;
-    }
-
-    .message.error {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      color: var(--accent-red);
-      display: block;
-    }
-
-    .nav-link {
-      text-align: center;
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .nav-link a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-      transition: color 0.2s;
-    }
-
-    .nav-link a:hover {
-      color: var(--accent-primary);
-    }
-
-    @media (max-width: 600px) {
-      .container { padding: 24px 16px; }
-      .header h1 { font-size: 1.5rem; }
-      .question-card { padding: 16px; }
+    @media (max-width: 680px) {
+      .main { grid-template-columns: 1fr; }
+      .site-header { padding: 40px 24px 28px; }
+      .site-header h1 { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="badge">📋 課程前測</div>
-      <h1>問卷調查</h1>
-      <p>請填寫以下問卷，幫助我們更好地了解你的需求</p>
+
+  <div class="site-header">
+    <div class="logo">🎓</div>
+    <h1>課程學習系統</h1>
+    <p>請選擇你的身份登入</p>
+  </div>
+
+  <div class="main">
+
+    <!-- 學員 -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-icon icon-student">👨‍🎓</div>
+        <div>
+          <div class="panel-title">學員入口</div>
+          <div class="panel-desc">填寫問卷與課堂練習</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <a class="survey-card" href="pre.html">
+        <div class="card-icon card-pre">📋</div>
+        <div class="card-text">
+          <div class="title">課前問卷</div>
+          <div class="sub">課程開始前填寫</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+      <a class="survey-card" href="post.html">
+        <div class="card-icon card-post">✅</div>
+        <div class="card-text">
+          <div class="title">課後問卷</div>
+          <div class="sub">課程結束後填寫</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+      <a class="survey-card" href="vital.html">
+        <div class="card-icon card-vital">🩺</div>
+        <div class="card-text">
+          <div class="title">生理徵象量測</div>
+          <div class="sub">課堂練習記錄</div>
+        </div>
+        <span class="arrow">›</span>
+      </a>
     </div>
 
-    <form id="surveyForm">
-      <div class="question-card">
-        <h3><span class="num">1</span>你對 GitHub 帳號註冊與使用的熟悉度？<span class="required">*</span></h3>
-        <div class="options">
-          <label><input type="radio" name="github" value="完全不熟悉" required> 完全不熟悉</label>
-          <label><input type="radio" name="github" value="聽過但沒用過"> 聽過但沒用過</label>
-          <label><input type="radio" name="github" value="曾經註冊過帳號"> 曾經註冊過帳號</label>
-          <label><input type="radio" name="github" value="熟悉 Repo 建立與 Push"> 熟悉 Repo 建立與 Push</label>
+    <!-- 講師 -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-icon icon-teacher">👩‍🏫</div>
+        <div>
+          <div class="panel-title">講師入口</div>
+          <div class="panel-desc">查看問卷統計與資料</div>
         </div>
       </div>
-
-      <div class="question-card">
-        <h3><span class="num">2</span>你對 VS Code 安裝與操作的熟悉度？<span class="required">*</span></h3>
-        <div class="options">
-          <label><input type="radio" name="vscode" value="沒安裝過 VS Code" required> 沒安裝過 VS Code</label>
-          <label><input type="radio" name="vscode" value="安裝過但不常用"> 安裝過但不常用</label>
-          <label><input type="radio" name="vscode" value="熟悉基本操作（開檔案、編輯程式）"> 熟悉基本操作（開檔案、編輯程式）</label>
-          <label><input type="radio" name="vscode" value="熟悉插件安裝與設定"> 熟悉插件安裝與設定</label>
+      <div class="divider"></div>
+      <form id="loginForm">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="form-group">
+            <label>帳號</label>
+            <input type="text" id="username" placeholder="admin" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label>密碼</label>
+            <input type="password" id="password" placeholder="••••••" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn-teacher">進入後台管理</button>
+          <div class="login-error" id="loginError">帳號或密碼錯誤</div>
         </div>
-      </div>
-
-      <div class="question-card">
-        <h3><span class="num">3</span>你對 Qwen Code 擴充元件的了解程度？<span class="required">*</span></h3>
-        <div class="options">
-          <label><input type="radio" name="qwen" value="沒聽過" required> 沒聽過</label>
-          <label><input type="radio" name="qwen" value="聽過但沒用過"> 聽過但沒用過</label>
-          <label><input type="radio" name="qwen" value="安裝過但不熟悉功能"> 安裝過但不熟悉功能</label>
-          <label><input type="radio" name="qwen" value="熟悉並常用"> 熟悉並常用</label>
-        </div>
-      </div>
-
-      <div class="question-card">
-        <h3><span class="num">4</span>你對 GitHub Pages 部署網站的了解程度？<span class="required">*</span></h3>
-        <div class="options">
-          <label><input type="radio" name="pages" value="完全不熟悉" required> 完全不熟悉</label>
-          <label><input type="radio" name="pages" value="知道有這功能但沒用過"> 知道有這功能但沒用過</label>
-          <label><input type="radio" name="pages" value="曾經部署過網站"> 曾經部署過網站</label>
-          <label><input type="radio" name="pages" value="熟悉部署流程並能獨立完成"> 熟悉部署流程並能獨立完成</label>
-        </div>
-      </div>
-
-      <div class="question-card">
-        <h3><span class="num">5</span>你希望在課程中學到什麼？</h3>
-        <textarea name="learn" placeholder="請輸入你的期望..."></textarea>
-      </div>
-
-      <div class="question-card">
-        <h3><span class="num">6</span>你覺得目前寫程式最大的困難是什麼？</h3>
-        <textarea name="difficulty" placeholder="請描述你遇到的困難..."></textarea>
-      </div>
-
-      <button type="submit" class="btn-submit" id="submitBtn">提交問卷</button>
-      <div id="message" class="message"></div>
-    </form>
-
-    <div class="nav-link">
-      <a href="admin.html">前往後台管理 →</a>
+      </form>
     </div>
+
   </div>
 
   <script>
-    // Google Apps Script 寫入網址
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx51RlYFqcX9zhN1COxSRqDi2extdKb8xIo6bZ8jugpRgBgx1tlb4Q7RJe7hM3R3eAO/exec';
-    
-    const form = document.getElementById('surveyForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const messageDiv = document.getElementById('message');
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'admin123456';
 
-    form.addEventListener('submit', async (e) => {
+    document.getElementById('loginForm').addEventListener('submit', e => {
       e.preventDefault();
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = '提交中...';
-      messageDiv.className = 'message';
-      messageDiv.textContent = '';
-
-      const formData = new FormData(form);
-      const data = {
-        github: formData.get('github'),
-        vscode: formData.get('vscode'),
-        qwen: formData.get('qwen'),
-        pages: formData.get('pages'),
-        learn: formData.get('learn') || '',
-        difficulty: formData.get('difficulty') || '',
-        timestamp: new Date().toISOString()
-      };
-
-      try {
-        // 發送至 Google Apps Script
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(data)
-        });
-
-        messageDiv.className = 'message success';
-        messageDiv.textContent = '✅ 問卷提交成功！感謝你的參與。';
-        form.reset();
-      } catch (error) {
-        messageDiv.className = 'message error';
-        messageDiv.textContent = '❌ 提交失敗，請檢查網路後重試。';
-        console.error(error);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = '提交問卷';
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        sessionStorage.setItem('adminAuth', '1');
+        window.location.href = 'admin.html';
+      } else {
+        document.getElementById('loginError').style.display = 'block';
       }
     });
   </script>

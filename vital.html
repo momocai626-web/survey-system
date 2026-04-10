@@ -152,21 +152,6 @@
 
   <form id="vitalForm">
 
-    <!-- 學員資訊 -->
-    <div class="card">
-      <div class="card-title">學員資訊</div>
-      <div class="field-row">
-        <div class="field">
-          <label>學員姓名</label>
-          <input type="text" id="name" name="name" placeholder="請輸入姓名">
-        </div>
-        <div class="field">
-          <label>學號 / 編號</label>
-          <input type="text" id="sid" name="sid" placeholder="選填">
-        </div>
-      </div>
-    </div>
-
     <!-- 生命徵象 -->
     <div class="card">
       <div class="card-title">生命徵象</div>
@@ -356,9 +341,6 @@
   /* ---- 送出 ---- */
   document.getElementById('vitalForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    if (!name) { showMsg('error', '❌ 請填寫學員姓名。'); return; }
-
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.textContent = '送出中...';
@@ -369,8 +351,6 @@
     const bmiRaw = (h && w) ? +(w / ((h / 100) ** 2)).toFixed(1) : null;
 
     const data = {
-      name:      name,
-      sid:       document.getElementById('sid').value.trim(),
       temp:      document.getElementById('temp').value,
       pulse:     document.getElementById('pulse').value,
       sbp:       document.getElementById('sbp').value,

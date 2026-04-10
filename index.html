@@ -5,177 +5,303 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>課程前測問卷調查</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a25;
+      --bg-input: #12121a;
+      --border-color: #2a2a3a;
+      --border-focus: #6366f1;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --text-muted: #555568;
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
     }
 
     body {
-      font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       min-height: 100vh;
-      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+      z-index: -1;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 720px;
       margin: 0 auto;
-      background: white;
+      padding: 48px 24px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      color: var(--accent-primary);
+      padding: 6px 14px;
       border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 16px;
     }
 
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 10px;
-      font-size: 2em;
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f0f0f5 0%, #8888a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
     }
 
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 30px;
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
     }
 
-    .question {
-      background: #f8f9fa;
-      border-left: 4px solid #667eea;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-    }
-
-    .question h3 {
-      color: #333;
-      margin-bottom: 15px;
-      font-size: 1.1em;
-    }
-
-    .options label {
-      display: block;
-      padding: 12px 15px;
-      margin: 8px 0;
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
+    /* Question Card */
+    .question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 16px;
       transition: all 0.3s;
     }
 
+    .question-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.08);
+    }
+
+    .question-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .question-card h3 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: var(--gradient-primary);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .required {
+      color: var(--accent-red);
+      margin-left: 4px;
+    }
+
+    /* Radio Options */
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      margin: 6px 0;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
     .options label:hover {
-      background: #e9ecef;
-      transform: translateX(5px);
+      border-color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.05);
     }
 
     .options input[type="radio"] {
-      margin-right: 10px;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      position: relative;
     }
 
+    .options input[type="radio"]:checked {
+      border-color: var(--accent-primary);
+      background: var(--accent-primary);
+    }
+
+    .options input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px; height: 6px;
+      background: white;
+      border-radius: 50%;
+    }
+
+    .options label:has(input:checked) {
+      border-color: var(--accent-primary);
+      background: rgba(99, 102, 241, 0.08);
+      color: var(--text-primary);
+    }
+
+    /* Textarea */
     textarea {
       width: 100%;
-      padding: 15px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 1em;
+      padding: 14px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: inherit;
       resize: vertical;
       min-height: 100px;
-      transition: border-color 0.3s;
-      font-family: inherit;
+      transition: all 0.2s;
     }
 
     textarea:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
 
-    .btn {
-      display: block;
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Submit Button */
+    .btn-submit {
       width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 16px;
+      background: var(--gradient-primary);
       color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 1.2em;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: all 0.3s;
+      margin-top: 24px;
+      font-family: inherit;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
     }
 
-    .btn:hover:not(:disabled) {
+    .btn-submit:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 6px 30px rgba(99, 102, 241, 0.4);
     }
 
-    .btn:disabled {
+    .btn-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      transform: none;
     }
 
+    /* Message */
     .message {
       text-align: center;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 8px;
+      padding: 14px;
+      margin-top: 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
       display: none;
     }
 
     .message.success {
-      background: #d4edda;
-      color: #155724;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
       display: block;
     }
 
     .message.error {
-      background: #f8d7da;
-      color: #721c24;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
       display: block;
     }
 
-    .required {
-      color: #dc3545;
-    }
-
+    /* Nav */
     .nav-link {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
     }
 
     .nav-link a {
-      color: #667eea;
+      color: var(--text-muted);
       text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
     }
 
     .nav-link a:hover {
-      text-decoration: underline;
+      color: var(--accent-primary);
     }
 
+    /* Responsive */
     @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-
-      h1 {
-        font-size: 1.5em;
-      }
-
-      .btn-group {
-        flex-direction: column;
-      }
+      .container { padding: 24px 16px; }
+      .header h1 { font-size: 1.5rem; }
+      .question-card { padding: 16px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📋 課程前測問卷調查</h1>
-    <p class="subtitle">請填寫以下問卷，幫助我們更好地了解你的需求</p>
+    <div class="header">
+      <div class="badge">📋 課程前測</div>
+      <h1>問卷調查</h1>
+      <p>請填寫以下問卷，幫助我們更好地了解你的需求</p>
+    </div>
 
     <form id="surveyForm">
-      <!-- GitHub 題目 -->
-      <div class="question">
-        <h3>1. 你對 GitHub 帳號註冊與使用的熟悉度？ <span class="required">*</span></h3>
+      <div class="question-card">
+        <h3><span class="num">1</span>你對 GitHub 帳號註冊與使用的熟悉度？<span class="required">*</span></h3>
         <div class="options">
           <label><input type="radio" name="github" value="完全不熟悉" required> 完全不熟悉</label>
           <label><input type="radio" name="github" value="聽過但沒用過"> 聽過但沒用過</label>
@@ -184,9 +310,8 @@
         </div>
       </div>
 
-      <!-- VS Code 題目 -->
-      <div class="question">
-        <h3>2. 你對 VS Code 安裝與操作的熟悉度？ <span class="required">*</span></h3>
+      <div class="question-card">
+        <h3><span class="num">2</span>你對 VS Code 安裝與操作的熟悉度？<span class="required">*</span></h3>
         <div class="options">
           <label><input type="radio" name="vscode" value="沒安裝過 VS Code" required> 沒安裝過 VS Code</label>
           <label><input type="radio" name="vscode" value="安裝過但不常用"> 安裝過但不常用</label>
@@ -195,9 +320,8 @@
         </div>
       </div>
 
-      <!-- Qwen Code 題目 -->
-      <div class="question">
-        <h3>3. 你對 Qwen Code 擴充元件的了解程度？ <span class="required">*</span></h3>
+      <div class="question-card">
+        <h3><span class="num">3</span>你對 Qwen Code 擴充元件的了解程度？<span class="required">*</span></h3>
         <div class="options">
           <label><input type="radio" name="qwen" value="沒聽過" required> 沒聽過</label>
           <label><input type="radio" name="qwen" value="聽過但沒用過"> 聽過但沒用過</label>
@@ -206,9 +330,8 @@
         </div>
       </div>
 
-      <!-- GitHub Pages 題目 -->
-      <div class="question">
-        <h3>4. 你對 GitHub Pages 部署網站的了解程度？ <span class="required">*</span></h3>
+      <div class="question-card">
+        <h3><span class="num">4</span>你對 GitHub Pages 部署網站的了解程度？<span class="required">*</span></h3>
         <div class="options">
           <label><input type="radio" name="pages" value="完全不熟悉" required> 完全不熟悉</label>
           <label><input type="radio" name="pages" value="知道有這功能但沒用過"> 知道有這功能但沒用過</label>
@@ -217,19 +340,17 @@
         </div>
       </div>
 
-      <!-- 開放式問題 -->
-      <div class="question">
-        <h3>5. 你希望在課程中學到什麼？</h3>
+      <div class="question-card">
+        <h3><span class="num">5</span>你希望在課程中學到什麼？</h3>
         <textarea name="learn" placeholder="請輸入你的期望..."></textarea>
       </div>
 
-      <div class="question">
-        <h3>6. 你覺得目前寫程式最大的困難是什麼？</h3>
+      <div class="question-card">
+        <h3><span class="num">6</span>你覺得目前寫程式最大的困難是什麼？</h3>
         <textarea name="difficulty" placeholder="請描述你遇到的困難..."></textarea>
       </div>
 
-      <button type="submit" class="btn" id="submitBtn">提交問卷</button>
-
+      <button type="submit" class="btn-submit" id="submitBtn">提交問卷</button>
       <div id="message" class="message"></div>
     </form>
 
@@ -244,16 +365,13 @@
     const submitBtn = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('message');
 
-    // 提交表單
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-
       submitBtn.disabled = true;
       submitBtn.textContent = '提交中...';
       messageDiv.className = 'message';
       messageDiv.textContent = '';
 
-      // 收集表單資料
       const formData = new FormData(form);
       const response = {
         github: formData.get('github'),
@@ -265,19 +383,16 @@
         timestamp: new Date().toISOString()
       };
 
-      // 儲存到 LocalStorage
       try {
         const responses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
         responses.push(response);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
-
         messageDiv.className = 'message success';
         messageDiv.textContent = '✅ 問卷提交成功！感謝你的參與。';
         form.reset();
       } catch (error) {
         messageDiv.className = 'message error';
         messageDiv.textContent = '❌ 提交失敗，請重試。';
-        console.error('儲存錯誤:', error);
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '提交問卷';

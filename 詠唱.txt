@@ -27,13 +27,13 @@
 送出方式：fetch POST → GAS → Google Sheets（mode: no-cors）
 
 送出資料欄位（JSON key）：
-github, vscode, qwen, pages, learn, difficulty, timestamp
+github, vscode, aicoding, pages, learn, difficulty, timestamp
 
 Google Sheets（課前）：
 https://docs.google.com/spreadsheets/d/1Mk65vDEcB2J2lBEqcFZ7wkWrm17MdsoVJZWPd72Dw5E/edit
 
 Sheets 欄位順序（A→G）：
-GitHub, VSCode, Qwen, Pages, Learn, Difficulty, Timestamp
+GitHub, VSCode, AICoding, Pages, Learn, Difficulty, Timestamp
 （timestamp 在最後一欄）
 
 課前 GAS URL：
@@ -50,7 +50,7 @@ function doPost(e) {
     sheet.appendRow(['GitHub','VSCode','Qwen','Pages','Learn','Difficulty','Timestamp']);
   }
   sheet.appendRow([
-    data.github || '', data.vscode || '', data.qwen || '', data.pages || '',
+    data.github || '', data.vscode || '', data.aicoding || '', data.pages || '',
     data.learn || '', data.difficulty || '', data.timestamp || new Date().toISOString()
   ]);
   return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
@@ -64,9 +64,9 @@ function doGet(e) {
   if (data.length === 0) return ContentService
     .createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
   const result = data.map(row => ({
-    github: row[0]?row[0].toString():'', vscode: row[1]?row[1].toString():'',
-    qwen:   row[2]?row[2].toString():'', pages:  row[3]?row[3].toString():'',
-    learn:  row[4]?row[4].toString():'', difficulty: row[5]?row[5].toString():'',
+    github:    row[0]?row[0].toString():'', vscode:    row[1]?row[1].toString():'',
+    aicoding:  row[2]?row[2].toString():'', pages:     row[3]?row[3].toString():'',
+    learn:     row[4]?row[4].toString():'', difficulty: row[5]?row[5].toString():'',
     timestamp: row[6]?row[6].toString():''
   }));
   return ContentService.createTextOutput(JSON.stringify(result))

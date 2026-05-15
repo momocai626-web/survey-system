@@ -6,102 +6,135 @@
   <title>課前問卷調查</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121a;
-      --bg-card: #1a1a25;
-      --border-color: #2a2a3a;
-      --text-primary: #f0f0f5;
-      --text-secondary: #8888a0;
-      --text-muted: #555568;
-      --accent-primary: #6366f1;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --bg: #06060f; --glass: rgba(255,255,255,.04); --glass-hover: rgba(255,255,255,.07);
+      --border: rgba(255,255,255,.08); --border-strong: rgba(255,255,255,.16);
+      --text-1: #f1f5f9; --text-2: #94a3b8; --text-3: #475569;
+      --accent: #7c3aed; --accent2: #a855f7; --red: #ef4444; --green: #10b981;
+      --grad: linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #a855f7 100%);
+      --r-sm: 10px; --r-md: 16px; --r-lg: 20px;
     }
-    body {
-      font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
-      background: var(--bg-primary); color: var(--text-primary);
-      min-height: 100vh; line-height: 1.6;
-    }
-    body::before {
-      content: ''; position: fixed; top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.08) 0%, transparent 50%),
-                  radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
-      z-index: -1;
-    }
-    .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
-    .header { text-align: center; margin-bottom: 40px; }
+    body { font-family:'Inter','Microsoft JhengHei',sans-serif; background:var(--bg); color:var(--text-1); min-height:100vh; line-height:1.6; overflow-x:hidden; }
+
+    .aurora { position:fixed; inset:0; z-index:-2; overflow:hidden; pointer-events:none; }
+    .aurora-blob { position:absolute; border-radius:50%; filter:blur(130px); }
+    .aurora-blob:nth-child(1) { width:600px; height:600px; opacity:.14; background:radial-gradient(circle,#7c3aed,transparent 70%); top:-220px; left:-180px; animation:b1 26s ease-in-out infinite; }
+    .aurora-blob:nth-child(2) { width:380px; height:380px; opacity:.09; background:radial-gradient(circle,#a855f7,transparent 70%); bottom:-130px; right:-100px; animation:b2 32s ease-in-out infinite; }
+    @keyframes b1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(45px,30px) scale(1.1)} }
+    @keyframes b2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,-20px) scale(1.06)} }
+
+    .grid-bg { position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px); background-size:64px 64px; }
+
+    .container { max-width:680px; margin:0 auto; padding:56px 24px 80px; }
+
+    /* Header */
+    .header { text-align:center; margin-bottom:48px; animation:fadeDown .5s ease; }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
     .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2);
-      color: var(--accent-primary); padding: 6px 14px; border-radius: 20px;
-      font-size: 0.8rem; font-weight: 500; margin-bottom: 16px;
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(124,58,237,.12); border:1px solid rgba(124,58,237,.25);
+      color:#c4b5fd; padding:6px 16px; border-radius:100px;
+      font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+      margin-bottom:20px;
     }
     .header h1 {
-      font-size: 2rem; font-weight: 800;
-      background: var(--gradient-primary);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 8px;
+      font-size:clamp(1.75rem,4vw,2.25rem); font-weight:800; letter-spacing:-.03em;
+      background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      margin-bottom:10px;
     }
-    .header p { color: var(--text-secondary); font-size: 0.95rem; }
+    .header p { color:var(--text-3); font-size:.9rem; }
+
+    /* Cards */
     .card {
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px;
+      background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border:1px solid var(--border); border-radius:var(--r-lg);
+      padding:28px; margin-bottom:14px;
+      animation:fadeUp .5s ease both; transition:border-color .3s;
     }
-    .question-title {
-      font-size: 1rem; font-weight: 600; margin-bottom: 16px;
-      display: flex; align-items: flex-start; gap: 10px;
-    }
-    .question-title::before {
-      content: ''; flex-shrink: 0; width: 4px; height: 20px; margin-top: 2px;
-      background: var(--gradient-primary); border-radius: 2px;
-    }
-    .options { display: flex; flex-direction: column; gap: 10px; }
+    .card:hover { border-color:var(--border-strong); }
+    .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.1s}
+    .card:nth-child(3){animation-delay:.15s} .card:nth-child(4){animation-delay:.2s}
+    .card:nth-child(5){animation-delay:.25s} .card:nth-child(6){animation-delay:.3s}
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+    .question-num { font-size:.68rem; font-weight:700; color:#a78bfa; text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+    .question-title { font-size:1rem; font-weight:600; color:var(--text-1); margin-bottom:18px; line-height:1.5; }
+
+    /* Options */
+    .options { display:flex; flex-direction:column; gap:8px; }
     .option-label {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 16px; border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color); cursor: pointer;
-      transition: all 0.2s; font-size: 0.9rem; color: var(--text-secondary);
+      display:flex; align-items:center; gap:14px;
+      padding:13px 16px; border-radius:var(--r-sm);
+      border:1px solid var(--border); cursor:pointer;
+      transition:all .2s cubic-bezier(.4,0,.2,1);
+      font-size:.88rem; color:var(--text-2);
+      background:transparent; position:relative; overflow:hidden;
+      user-select:none;
     }
-    .option-label:hover { border-color: var(--accent-primary); color: var(--text-primary); background: rgba(99,102,241,0.05); }
-    .option-label input[type="radio"] { display: none; }
-    .option-label.selected { border-color: var(--accent-primary); color: var(--text-primary); background: rgba(99,102,241,0.1); }
+    .option-label::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(99,102,241,.06));
+      opacity:0; transition:opacity .2s;
+    }
+    .option-label:hover::before { opacity:1; }
+    .option-label:hover { border-color:rgba(124,58,237,.3); color:var(--text-1); }
+    .option-label input[type="radio"] { display:none; }
+    .option-label.selected { border-color:rgba(124,58,237,.5); color:var(--text-1); }
+    .option-label.selected::before { opacity:1; }
+
     .radio-dot {
-      width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border-color);
-      flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+      width:20px; height:20px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.18); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      transition:all .25s; background:transparent; position:relative; z-index:1;
     }
-    .option-label.selected .radio-dot { border-color: var(--accent-primary); background: var(--accent-primary); }
-    .option-label.selected .radio-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: white; }
+    .option-label.selected .radio-dot {
+      border-color:transparent; background:var(--grad);
+      box-shadow:0 0 14px rgba(124,58,237,.45);
+    }
+    .option-label.selected .radio-dot::after { content:''; width:6px; height:6px; border-radius:50%; background:white; }
+    .option-text { position:relative; z-index:1; }
+
     textarea {
-      width: 100%; min-height: 100px; background: var(--bg-secondary);
-      border: 1px solid var(--border-color); border-radius: var(--radius-sm);
-      color: var(--text-primary); padding: 12px 16px; font-size: 0.9rem;
-      font-family: inherit; resize: vertical; transition: border-color 0.2s;
+      width:100%; min-height:110px; background:rgba(255,255,255,.03);
+      border:1px solid var(--border); border-radius:var(--r-sm);
+      color:var(--text-1); padding:14px 16px; font-size:.88rem;
+      font-family:inherit; resize:vertical; transition:all .2s; line-height:1.7;
     }
-    textarea:focus { outline: none; border-color: var(--accent-primary); }
-    textarea::placeholder { color: var(--text-muted); }
+    textarea:focus { outline:none; border-color:rgba(124,58,237,.4); background:rgba(255,255,255,.05); box-shadow:0 0 0 3px rgba(124,58,237,.12); }
+    textarea::placeholder { color:var(--text-3); }
+
+    /* Submit */
+    .submit-area { padding-top:8px; animation:fadeUp .5s .35s ease both; }
     .btn-submit {
-      width: 100%; padding: 16px; background: var(--gradient-primary);
-      border: none; border-radius: var(--radius-md); color: white;
-      font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit;
-      transition: all 0.3s; box-shadow: 0 4px 20px rgba(99,102,241,0.3);
-      margin-top: 8px;
+      width:100%; padding:16px; background:var(--grad);
+      border:none; border-radius:var(--r-md); color:white;
+      font-size:1rem; font-weight:600; cursor:pointer; font-family:inherit;
+      transition:all .3s; position:relative; overflow:hidden;
+      box-shadow:0 4px 28px rgba(124,58,237,.38),inset 0 1px 0 rgba(255,255,255,.2);
     }
-    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(99,102,241,0.4); }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-    .message { text-align: center; margin-top: 16px; padding: 14px; border-radius: var(--radius-sm); font-size: 0.9rem; }
-    .message.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent-green); }
-    .message.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--accent-red); }
-    .nav-link { text-align: center; margin-top: 32px; }
-    .nav-link a { color: var(--accent-primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
-    @media (max-width: 768px) { .container { padding: 24px 16px; } .header h1 { font-size: 1.5rem; } }
+    .btn-submit::after { content:''; position:absolute; inset:0; background:linear-gradient(rgba(255,255,255,.1),transparent); opacity:0; transition:opacity .2s; }
+    .btn-submit:hover:not(:disabled)::after { opacity:1; }
+    .btn-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 40px rgba(124,58,237,.48),inset 0 1px 0 rgba(255,255,255,.2); }
+    .btn-submit:active:not(:disabled) { transform:translateY(0); }
+    .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
+
+    .message { text-align:center; margin-top:14px; padding:14px 20px; border-radius:var(--r-sm); font-size:.88rem; }
+    .message.success { background:rgba(16,185,129,.1); border:1px solid rgba(16,185,129,.25); color:#34d399; }
+    .message.error   { background:rgba(239,68,68,.1);  border:1px solid rgba(239,68,68,.25);  color:#f87171; }
+
+    .nav-link { text-align:center; margin-top:36px; }
+    .nav-link a { color:var(--text-3); text-decoration:none; font-size:.85rem; font-weight:500; transition:color .2s; }
+    .nav-link a:hover { color:var(--text-2); }
+
+    @media(max-width:680px) { .container{padding:36px 16px 60px;} }
   </style>
 </head>
 <body>
+  <div class="aurora"><div class="aurora-blob"></div><div class="aurora-blob"></div></div>
+  <div class="grid-bg"></div>
+
   <div class="container">
     <div class="header">
       <div class="badge">📋 課前問卷</div>
@@ -111,57 +144,65 @@
 
     <form id="surveyForm">
       <div class="card">
+        <div class="question-num">Q1</div>
         <div class="question-title">GitHub 帳號註冊與使用</div>
         <div class="options" data-name="GitHub">
-          <label class="option-label"><input type="radio" name="GitHub" value="完全不熟悉"><span class="radio-dot"></span>完全不熟悉</label>
-          <label class="option-label"><input type="radio" name="GitHub" value="聽過但沒用過"><span class="radio-dot"></span>聽過但沒用過</label>
-          <label class="option-label"><input type="radio" name="GitHub" value="曾經註冊過帳號"><span class="radio-dot"></span>曾經註冊過帳號</label>
-          <label class="option-label"><input type="radio" name="GitHub" value="熟悉 Repo 建立與 Push"><span class="radio-dot"></span>熟悉 Repo 建立與 Push</label>
+          <label class="option-label"><input type="radio" name="GitHub" value="完全不熟悉"><span class="radio-dot"></span><span class="option-text">完全不熟悉</span></label>
+          <label class="option-label"><input type="radio" name="GitHub" value="聽過但沒用過"><span class="radio-dot"></span><span class="option-text">聽過但沒用過</span></label>
+          <label class="option-label"><input type="radio" name="GitHub" value="曾經註冊過帳號"><span class="radio-dot"></span><span class="option-text">曾經註冊過帳號</span></label>
+          <label class="option-label"><input type="radio" name="GitHub" value="熟悉 Repo 建立與 Push"><span class="radio-dot"></span><span class="option-text">熟悉 Repo 建立與 Push</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q2</div>
         <div class="question-title">VS Code 安裝與操作</div>
         <div class="options" data-name="VSCode">
-          <label class="option-label"><input type="radio" name="VSCode" value="沒安裝過 VS Code"><span class="radio-dot"></span>沒安裝過 VS Code</label>
-          <label class="option-label"><input type="radio" name="VSCode" value="安裝過但不常用"><span class="radio-dot"></span>安裝過但不常用</label>
-          <label class="option-label"><input type="radio" name="VSCode" value="熟悉基本操作（開檔案、編輯程式）"><span class="radio-dot"></span>熟悉基本操作（開檔案、編輯程式）</label>
-          <label class="option-label"><input type="radio" name="VSCode" value="熟悉插件安裝與設定"><span class="radio-dot"></span>熟悉插件安裝與設定</label>
+          <label class="option-label"><input type="radio" name="VSCode" value="沒安裝過 VS Code"><span class="radio-dot"></span><span class="option-text">沒安裝過 VS Code</span></label>
+          <label class="option-label"><input type="radio" name="VSCode" value="安裝過但不常用"><span class="radio-dot"></span><span class="option-text">安裝過但不常用</span></label>
+          <label class="option-label"><input type="radio" name="VSCode" value="熟悉基本操作（開檔案、編輯程式）"><span class="radio-dot"></span><span class="option-text">熟悉基本操作（開檔案、編輯程式）</span></label>
+          <label class="option-label"><input type="radio" name="VSCode" value="熟悉插件安裝與設定"><span class="radio-dot"></span><span class="option-text">熟悉插件安裝與設定</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q3</div>
         <div class="question-title">AI Coding 擴充元件</div>
         <div class="options" data-name="AICoding">
-          <label class="option-label"><input type="radio" name="AICoding" value="沒聽過"><span class="radio-dot"></span>沒聽過</label>
-          <label class="option-label"><input type="radio" name="AICoding" value="聽過但沒用過"><span class="radio-dot"></span>聽過但沒用過</label>
-          <label class="option-label"><input type="radio" name="AICoding" value="安裝過但不熟悉功能"><span class="radio-dot"></span>安裝過但不熟悉功能</label>
-          <label class="option-label"><input type="radio" name="AICoding" value="熟悉並常用"><span class="radio-dot"></span>熟悉並常用</label>
+          <label class="option-label"><input type="radio" name="AICoding" value="沒聽過"><span class="radio-dot"></span><span class="option-text">沒聽過</span></label>
+          <label class="option-label"><input type="radio" name="AICoding" value="聽過但沒用過"><span class="radio-dot"></span><span class="option-text">聽過但沒用過</span></label>
+          <label class="option-label"><input type="radio" name="AICoding" value="安裝過但不熟悉功能"><span class="radio-dot"></span><span class="option-text">安裝過但不熟悉功能</span></label>
+          <label class="option-label"><input type="radio" name="AICoding" value="熟悉並常用"><span class="radio-dot"></span><span class="option-text">熟悉並常用</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q4</div>
         <div class="question-title">GitHub Pages 部署網站</div>
         <div class="options" data-name="Pages">
-          <label class="option-label"><input type="radio" name="Pages" value="完全不熟悉"><span class="radio-dot"></span>完全不熟悉</label>
-          <label class="option-label"><input type="radio" name="Pages" value="知道有這功能但沒用過"><span class="radio-dot"></span>知道有這功能但沒用過</label>
-          <label class="option-label"><input type="radio" name="Pages" value="曾經部署過網站"><span class="radio-dot"></span>曾經部署過網站</label>
-          <label class="option-label"><input type="radio" name="Pages" value="熟悉部署流程並能獨立完成"><span class="radio-dot"></span>熟悉部署流程並能獨立完成</label>
+          <label class="option-label"><input type="radio" name="Pages" value="完全不熟悉"><span class="radio-dot"></span><span class="option-text">完全不熟悉</span></label>
+          <label class="option-label"><input type="radio" name="Pages" value="知道有這功能但沒用過"><span class="radio-dot"></span><span class="option-text">知道有這功能但沒用過</span></label>
+          <label class="option-label"><input type="radio" name="Pages" value="曾經部署過網站"><span class="radio-dot"></span><span class="option-text">曾經部署過網站</span></label>
+          <label class="option-label"><input type="radio" name="Pages" value="熟悉部署流程並能獨立完成"><span class="radio-dot"></span><span class="option-text">熟悉部署流程並能獨立完成</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q5</div>
         <div class="question-title">你希望在課程中學到什麼？</div>
         <textarea name="Learn" placeholder="請輸入你的想法..."></textarea>
       </div>
 
       <div class="card">
+        <div class="question-num">Q6</div>
         <div class="question-title">你覺得目前寫程式最大的困難是什麼？</div>
         <textarea name="Difficulty" placeholder="請描述你遇到的困難..."></textarea>
       </div>
 
-      <button type="submit" class="btn-submit" id="submitBtn">提交課前問卷</button>
-      <div id="message" class="message" style="display:none;"></div>
+      <div class="submit-area">
+        <button type="submit" class="btn-submit" id="submitBtn">提交課前問卷</button>
+        <div id="message" class="message" style="display:none;"></div>
+      </div>
     </form>
 
     <div class="nav-link">
@@ -172,7 +213,6 @@
   <script>
     const PRE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXDP5xSEVw9-KQxY6_gQLtCL6FxyhUUvBziVr5AmCZlBF5i2EN-YeWxtTThEXWWGCxFw/exec';
 
-    // 選項點選樣式
     document.querySelectorAll('.options').forEach(group => {
       group.querySelectorAll('.option-label').forEach(label => {
         label.addEventListener('click', () => {
@@ -188,7 +228,6 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const formData = new FormData(form);
       const required = ['GitHub', 'VSCode', 'AICoding', 'Pages'];
       for (const key of required) {
@@ -197,19 +236,18 @@
           return;
         }
       }
-
       submitBtn.disabled = true;
       submitBtn.textContent = '提交中...';
       hideMessage();
 
       const data = {
-        GitHub:     formData.get('GitHub'),
-        VSCode:     formData.get('VSCode'),
-        AICoding:   formData.get('AICoding'),
-        Pages:      formData.get('Pages'),
-        Learn:      formData.get('Learn') || '',
-        Difficulty: formData.get('Difficulty') || '',
-        Timestamp:  new Date().toISOString()
+        github:     formData.get('GitHub'),
+        vscode:     formData.get('VSCode'),
+        aicoding:   formData.get('AICoding'),
+        pages:      formData.get('Pages'),
+        learn:      formData.get('Learn') || '',
+        difficulty: formData.get('Difficulty') || '',
+        timestamp:  new Date().toISOString()
       };
 
       try {
@@ -236,9 +274,7 @@
       messageDiv.textContent = text;
       messageDiv.style.display = 'block';
     }
-    function hideMessage() {
-      messageDiv.style.display = 'none';
-    }
+    function hideMessage() { messageDiv.style.display = 'none'; }
   </script>
 </body>
 </html>

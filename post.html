@@ -6,101 +6,124 @@
   <title>課後問卷調查</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121a;
-      --bg-card: #1a1a25;
-      --border-color: #2a2a3a;
-      --text-primary: #f0f0f5;
-      --text-secondary: #8888a0;
-      --text-muted: #555568;
-      --accent-primary: #10b981;
-      --accent-red: #ef4444;
-      --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
-      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --bg: #06060f; --glass: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.08); --border-strong: rgba(255,255,255,.16);
+      --text-1: #f1f5f9; --text-2: #94a3b8; --text-3: #475569;
+      --accent: #10b981; --accent2: #059669; --red: #ef4444;
+      --grad: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+      --r-sm: 10px; --r-md: 16px; --r-lg: 20px;
     }
-    body {
-      font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
-      background: var(--bg-primary); color: var(--text-primary);
-      min-height: 100vh; line-height: 1.6;
-    }
-    body::before {
-      content: ''; position: fixed; top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(ellipse at 30% 20%, rgba(16,185,129,0.07) 0%, transparent 50%),
-                  radial-gradient(ellipse at 70% 80%, rgba(5,150,105,0.05) 0%, transparent 50%);
-      z-index: -1;
-    }
-    .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
-    .header { text-align: center; margin-bottom: 40px; }
+    body { font-family:'Inter','Microsoft JhengHei',sans-serif; background:var(--bg); color:var(--text-1); min-height:100vh; line-height:1.6; overflow-x:hidden; }
+
+    .aurora { position:fixed; inset:0; z-index:-2; overflow:hidden; pointer-events:none; }
+    .aurora-blob { position:absolute; border-radius:50%; filter:blur(130px); }
+    .aurora-blob:nth-child(1) { width:600px; height:600px; opacity:.12; background:radial-gradient(circle,#10b981,transparent 70%); top:-220px; left:-150px; animation:b1 28s ease-in-out infinite; }
+    .aurora-blob:nth-child(2) { width:400px; height:400px; opacity:.09; background:radial-gradient(circle,#047857,transparent 70%); bottom:-140px; right:-120px; animation:b2 34s ease-in-out infinite; }
+    @keyframes b1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,28px) scale(1.1)} }
+    @keyframes b2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-28px,-18px) scale(1.07)} }
+
+    .grid-bg { position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px); background-size:64px 64px; }
+
+    .container { max-width:680px; margin:0 auto; padding:56px 24px 80px; }
+
+    .header { text-align:center; margin-bottom:48px; animation:fadeDown .5s ease; }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
     .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
-      color: var(--accent-primary); padding: 6px 14px; border-radius: 20px;
-      font-size: 0.8rem; font-weight: 500; margin-bottom: 16px;
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(16,185,129,.1); border:1px solid rgba(16,185,129,.25);
+      color:#6ee7b7; padding:6px 16px; border-radius:100px;
+      font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+      margin-bottom:20px;
     }
     .header h1 {
-      font-size: 2rem; font-weight: 800;
-      background: var(--gradient-primary);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 8px;
+      font-size:clamp(1.75rem,4vw,2.25rem); font-weight:800; letter-spacing:-.03em;
+      background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      margin-bottom:10px;
     }
-    .header p { color: var(--text-secondary); font-size: 0.95rem; }
+    .header p { color:var(--text-3); font-size:.9rem; }
+
     .card {
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px;
+      background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border:1px solid var(--border); border-radius:var(--r-lg);
+      padding:28px; margin-bottom:14px;
+      animation:fadeUp .5s ease both; transition:border-color .3s;
     }
-    .question-title {
-      font-size: 1rem; font-weight: 600; margin-bottom: 16px;
-      display: flex; align-items: flex-start; gap: 10px;
-    }
-    .question-title::before {
-      content: ''; flex-shrink: 0; width: 4px; height: 20px; margin-top: 2px;
-      background: var(--gradient-primary); border-radius: 2px;
-    }
-    .options { display: flex; flex-direction: column; gap: 10px; }
+    .card:hover { border-color:var(--border-strong); }
+    .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.1s}
+    .card:nth-child(3){animation-delay:.15s} .card:nth-child(4){animation-delay:.2s}
+    .card:nth-child(5){animation-delay:.25s} .card:nth-child(6){animation-delay:.3s}
+    .card:nth-child(7){animation-delay:.35s}
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+    .question-num { font-size:.68rem; font-weight:700; color:#6ee7b7; text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+    .question-title { font-size:1rem; font-weight:600; color:var(--text-1); margin-bottom:18px; line-height:1.5; }
+
+    .options { display:flex; flex-direction:column; gap:8px; }
     .option-label {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 16px; border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color); cursor: pointer;
-      transition: all 0.2s; font-size: 0.9rem; color: var(--text-secondary);
+      display:flex; align-items:center; gap:14px;
+      padding:13px 16px; border-radius:var(--r-sm);
+      border:1px solid var(--border); cursor:pointer;
+      transition:all .2s cubic-bezier(.4,0,.2,1);
+      font-size:.88rem; color:var(--text-2);
+      background:transparent; position:relative; overflow:hidden; user-select:none;
     }
-    .option-label:hover { border-color: var(--accent-primary); color: var(--text-primary); background: rgba(16,185,129,0.05); }
-    .option-label input[type="radio"] { display: none; }
-    .option-label.selected { border-color: var(--accent-primary); color: var(--text-primary); background: rgba(16,185,129,0.1); }
+    .option-label::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(5,150,105,.06)); opacity:0; transition:opacity .2s; }
+    .option-label:hover::before { opacity:1; }
+    .option-label:hover { border-color:rgba(16,185,129,.3); color:var(--text-1); }
+    .option-label input[type="radio"] { display:none; }
+    .option-label.selected { border-color:rgba(16,185,129,.5); color:var(--text-1); }
+    .option-label.selected::before { opacity:1; }
+
     .radio-dot {
-      width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border-color);
-      flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+      width:20px; height:20px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.18); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      transition:all .25s; background:transparent; position:relative; z-index:1;
     }
-    .option-label.selected .radio-dot { border-color: var(--accent-primary); background: var(--accent-primary); }
-    .option-label.selected .radio-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: white; }
+    .option-label.selected .radio-dot { border-color:transparent; background:var(--grad); box-shadow:0 0 14px rgba(16,185,129,.4); }
+    .option-label.selected .radio-dot::after { content:''; width:6px; height:6px; border-radius:50%; background:white; }
+    .option-text { position:relative; z-index:1; }
+
     textarea {
-      width: 100%; min-height: 100px; background: var(--bg-secondary);
-      border: 1px solid var(--border-color); border-radius: var(--radius-sm);
-      color: var(--text-primary); padding: 12px 16px; font-size: 0.9rem;
-      font-family: inherit; resize: vertical; transition: border-color 0.2s;
+      width:100%; min-height:110px; background:rgba(255,255,255,.03);
+      border:1px solid var(--border); border-radius:var(--r-sm);
+      color:var(--text-1); padding:14px 16px; font-size:.88rem;
+      font-family:inherit; resize:vertical; transition:all .2s; line-height:1.7;
     }
-    textarea:focus { outline: none; border-color: var(--accent-primary); }
-    textarea::placeholder { color: var(--text-muted); }
+    textarea:focus { outline:none; border-color:rgba(16,185,129,.4); background:rgba(255,255,255,.05); box-shadow:0 0 0 3px rgba(16,185,129,.12); }
+    textarea::placeholder { color:var(--text-3); }
+
+    .submit-area { padding-top:8px; animation:fadeUp .5s .4s ease both; }
     .btn-submit {
-      width: 100%; padding: 16px; background: var(--gradient-primary);
-      border: none; border-radius: var(--radius-md); color: white;
-      font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit;
-      transition: all 0.3s; box-shadow: 0 4px 20px rgba(16,185,129,0.3);
-      margin-top: 8px;
+      width:100%; padding:16px; background:var(--grad);
+      border:none; border-radius:var(--r-md); color:white;
+      font-size:1rem; font-weight:600; cursor:pointer; font-family:inherit;
+      transition:all .3s; position:relative; overflow:hidden;
+      box-shadow:0 4px 28px rgba(16,185,129,.35),inset 0 1px 0 rgba(255,255,255,.2);
     }
-    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(16,185,129,0.4); }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-    .message { text-align: center; margin-top: 16px; padding: 14px; border-radius: var(--radius-sm); font-size: 0.9rem; }
-    .message.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent-primary); }
-    .message.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--accent-red); }
-    .nav-link { text-align: center; margin-top: 32px; }
-    .nav-link a { color: var(--accent-primary); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
-    @media (max-width: 768px) { .container { padding: 24px 16px; } .header h1 { font-size: 1.5rem; } }
+    .btn-submit::after { content:''; position:absolute; inset:0; background:linear-gradient(rgba(255,255,255,.1),transparent); opacity:0; transition:opacity .2s; }
+    .btn-submit:hover:not(:disabled)::after { opacity:1; }
+    .btn-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 40px rgba(16,185,129,.45),inset 0 1px 0 rgba(255,255,255,.2); }
+    .btn-submit:active:not(:disabled) { transform:translateY(0); }
+    .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
+
+    .message { text-align:center; margin-top:14px; padding:14px 20px; border-radius:var(--r-sm); font-size:.88rem; }
+    .message.success { background:rgba(16,185,129,.1); border:1px solid rgba(16,185,129,.25); color:#34d399; }
+    .message.error   { background:rgba(239,68,68,.1);  border:1px solid rgba(239,68,68,.25);  color:#f87171; }
+
+    .nav-link { text-align:center; margin-top:36px; }
+    .nav-link a { color:var(--text-3); text-decoration:none; font-size:.85rem; font-weight:500; transition:color .2s; }
+    .nav-link a:hover { color:var(--text-2); }
+
+    @media(max-width:680px) { .container{padding:36px 16px 60px;} }
   </style>
 </head>
 <body>
+  <div class="aurora"><div class="aurora-blob"></div><div class="aurora-blob"></div></div>
+  <div class="grid-bg"></div>
+
   <div class="container">
     <div class="header">
       <div class="badge">✅ 課後問卷</div>
@@ -110,61 +133,70 @@
 
     <form id="surveyForm">
       <div class="card">
+        <div class="question-num">Q1</div>
         <div class="question-title">課程內容理解程度</div>
         <div class="options" data-name="understanding">
-          <label class="option-label"><input type="radio" name="understanding" value="完全聽不懂"><span class="radio-dot"></span>完全聽不懂</label>
-          <label class="option-label"><input type="radio" name="understanding" value="部分理解"><span class="radio-dot"></span>部分理解</label>
-          <label class="option-label"><input type="radio" name="understanding" value="大部分理解"><span class="radio-dot"></span>大部分理解</label>
-          <label class="option-label"><input type="radio" name="understanding" value="完全理解並能應用"><span class="radio-dot"></span>完全理解並能應用</label>
+          <label class="option-label"><input type="radio" name="understanding" value="完全聽不懂"><span class="radio-dot"></span><span class="option-text">完全聽不懂</span></label>
+          <label class="option-label"><input type="radio" name="understanding" value="部分理解"><span class="radio-dot"></span><span class="option-text">部分理解</span></label>
+          <label class="option-label"><input type="radio" name="understanding" value="大部分理解"><span class="radio-dot"></span><span class="option-text">大部分理解</span></label>
+          <label class="option-label"><input type="radio" name="understanding" value="完全理解並能應用"><span class="radio-dot"></span><span class="option-text">完全理解並能應用</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q2</div>
         <div class="question-title">課程實用性</div>
         <div class="options" data-name="usefulness">
-          <label class="option-label"><input type="radio" name="usefulness" value="沒什麼幫助"><span class="radio-dot"></span>沒什麼幫助</label>
-          <label class="option-label"><input type="radio" name="usefulness" value="有一些幫助"><span class="radio-dot"></span>有一些幫助</label>
-          <label class="option-label"><input type="radio" name="usefulness" value="很有幫助"><span class="radio-dot"></span>很有幫助</label>
-          <label class="option-label"><input type="radio" name="usefulness" value="對我非常有價值"><span class="radio-dot"></span>對我非常有價值</label>
+          <label class="option-label"><input type="radio" name="usefulness" value="沒什麼幫助"><span class="radio-dot"></span><span class="option-text">沒什麼幫助</span></label>
+          <label class="option-label"><input type="radio" name="usefulness" value="有一些幫助"><span class="radio-dot"></span><span class="option-text">有一些幫助</span></label>
+          <label class="option-label"><input type="radio" name="usefulness" value="很有幫助"><span class="radio-dot"></span><span class="option-text">很有幫助</span></label>
+          <label class="option-label"><input type="radio" name="usefulness" value="對我非常有價值"><span class="radio-dot"></span><span class="option-text">對我非常有價值</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q3</div>
         <div class="question-title">課程節奏</div>
         <div class="options" data-name="pace">
-          <label class="option-label"><input type="radio" name="pace" value="太快"><span class="radio-dot"></span>太快</label>
-          <label class="option-label"><input type="radio" name="pace" value="剛好"><span class="radio-dot"></span>剛好</label>
-          <label class="option-label"><input type="radio" name="pace" value="太慢"><span class="radio-dot"></span>太慢</label>
+          <label class="option-label"><input type="radio" name="pace" value="太快"><span class="radio-dot"></span><span class="option-text">太快</span></label>
+          <label class="option-label"><input type="radio" name="pace" value="剛好"><span class="radio-dot"></span><span class="option-text">剛好</span></label>
+          <label class="option-label"><input type="radio" name="pace" value="太慢"><span class="radio-dot"></span><span class="option-text">太慢</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q4</div>
         <div class="question-title">工具與技術熟悉度提升</div>
         <div class="options" data-name="skill">
-          <label class="option-label"><input type="radio" name="skill" value="沒有提升"><span class="radio-dot"></span>沒有提升</label>
-          <label class="option-label"><input type="radio" name="skill" value="有一點提升"><span class="radio-dot"></span>有一點提升</label>
-          <label class="option-label"><input type="radio" name="skill" value="提升很多"><span class="radio-dot"></span>提升很多</label>
-          <label class="option-label"><input type="radio" name="skill" value="已經能獨立操作"><span class="radio-dot"></span>已經能獨立操作</label>
+          <label class="option-label"><input type="radio" name="skill" value="沒有提升"><span class="radio-dot"></span><span class="option-text">沒有提升</span></label>
+          <label class="option-label"><input type="radio" name="skill" value="有一點提升"><span class="radio-dot"></span><span class="option-text">有一點提升</span></label>
+          <label class="option-label"><input type="radio" name="skill" value="提升很多"><span class="radio-dot"></span><span class="option-text">提升很多</span></label>
+          <label class="option-label"><input type="radio" name="skill" value="已經能獨立操作"><span class="radio-dot"></span><span class="option-text">已經能獨立操作</span></label>
         </div>
       </div>
 
       <div class="card">
+        <div class="question-num">Q5</div>
         <div class="question-title">課程中最喜歡的部分</div>
         <textarea name="best" placeholder="請分享你最喜歡的環節..."></textarea>
       </div>
 
       <div class="card">
+        <div class="question-num">Q6</div>
         <div class="question-title">課程中最需要改進的地方</div>
         <textarea name="improve" placeholder="請提供你的改進建議..."></textarea>
       </div>
 
       <div class="card">
+        <div class="question-num">Q7</div>
         <div class="question-title">你希望未來課程增加哪些主題？</div>
         <textarea name="future" placeholder="請描述你感興趣的主題..."></textarea>
       </div>
 
-      <button type="submit" class="btn-submit" id="submitBtn">提交課後問卷</button>
-      <div id="message" class="message" style="display:none;"></div>
+      <div class="submit-area">
+        <button type="submit" class="btn-submit" id="submitBtn">提交課後問卷</button>
+        <div id="message" class="message" style="display:none;"></div>
+      </div>
     </form>
 
     <div class="nav-link">
@@ -175,7 +207,6 @@
   <script>
     const POST_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPxyjS-Qo0zBEEeugFHzrsGyvB5hRU3HYMFbsdn8kCye06fBsXk3fLAeUIK2BQLM1d/exec';
 
-    // 選項點選樣式
     document.querySelectorAll('.options').forEach(group => {
       group.querySelectorAll('.option-label').forEach(label => {
         label.addEventListener('click', () => {
@@ -191,7 +222,6 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const formData = new FormData(form);
       const required = ['understanding', 'usefulness', 'pace', 'skill'];
       for (const key of required) {
@@ -200,7 +230,6 @@
           return;
         }
       }
-
       submitBtn.disabled = true;
       submitBtn.textContent = '提交中...';
       hideMessage();
@@ -240,9 +269,7 @@
       messageDiv.textContent = text;
       messageDiv.style.display = 'block';
     }
-    function hideMessage() {
-      messageDiv.style.display = 'none';
-    }
+    function hideMessage() { messageDiv.style.display = 'none'; }
   </script>
 </body>
 </html>

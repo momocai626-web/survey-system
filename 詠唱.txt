@@ -37,7 +37,7 @@ GitHub, VSCode, AICoding, Pages, Learn, Difficulty, Timestamp
 （timestamp 在最後一欄）
 
 課前 GAS URL：
-https://script.google.com/macros/s/AKfycbyXDP5xSEVw9-KQxY6_gQLtCL6FxyhUUvBziVr5AmCZlBF5i2EN-YeWxtTThEXWWGCxFw/exec
+https://script.google.com/macros/s/AKfycbz6ywc-gCCDa1-wtveMNhe3VdDiH-En1QSyJ93AtlO9AEOAx3CLWX3-qGSyoRmakpGemA/exec
 
 課前 GAS 完整程式碼：
 ----------------------------------------

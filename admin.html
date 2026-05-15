@@ -253,10 +253,10 @@
     const POST_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPxyjS-Qo0zBEEeugFHzrsGyvB5hRU3HYMFbsdn8kCye06fBsXk3fLAeUIK2BQLM1d/exec';
 
     const preQuestions = {
-      github: { title: 'GitHub 帳號註冊與使用', options: ['完全不熟悉','聽過但沒用過','曾經註冊過帳號','熟悉 Repo 建立與 Push'] },
-      vscode: { title: 'VS Code 安裝與操作',   options: ['沒安裝過 VS Code','安裝過但不常用','熟悉基本操作（開檔案、編輯程式）','熟悉插件安裝與設定'] },
-      qwen:   { title: 'Qwen Code 擴充元件',   options: ['沒聽過','聽過但沒用過','安裝過但不熟悉功能','熟悉並常用'] },
-      pages:  { title: 'GitHub Pages 部署網站', options: ['完全不熟悉','知道有這功能但沒用過','曾經部署過網站','熟悉部署流程並能獨立完成'] }
+      GitHub:   { title: 'GitHub 帳號註冊與使用', options: ['完全不熟悉','聽過但沒用過','曾經註冊過帳號','熟悉 Repo 建立與 Push'] },
+      VSCode:   { title: 'VS Code 安裝與操作',   options: ['沒安裝過 VS Code','安裝過但不常用','熟悉基本操作（開檔案、編輯程式）','熟悉插件安裝與設定'] },
+      AICoding: { title: 'AI Coding 擴充元件',   options: ['沒聽過','聽過但沒用過','安裝過但不熟悉功能','熟悉並常用'] },
+      Pages:    { title: 'GitHub Pages 部署網站', options: ['完全不熟悉','知道有這功能但沒用過','曾經部署過網站','熟悉部署流程並能獨立完成'] }
     };
 
     const postQuestions = {
@@ -316,8 +316,8 @@
         const data = await res.json();
         document.getElementById('preTotal').textContent = data.length;
         renderGrid('preGrid', data, preQuestions, 'pre');
-        renderOpenList('preLearnList', data, 'learn', 'pre');
-        renderOpenList('preDiffList', data, 'difficulty', 'pre');
+        renderOpenList('preLearnList', data, 'Learn', 'pre');
+        renderOpenList('preDiffList', data, 'Difficulty', 'pre');
         hide('loadingPre'); show('dataPre');
       } catch (err) {
         hide('loadingPre');

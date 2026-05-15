@@ -123,7 +123,7 @@ git push origin main
 |------|------|
 | GitHub | GitHub 帳號註冊與使用熟悉度 |
 | VSCode | VS Code 安裝與操作熟悉度 |
-| Qwen | Qwen Code 擴充元件了解程度 |
+| Qwen | AI Coding 擴充元件了解程度 |
 | Pages | GitHub Pages 部署網站了解程度 |
 | 期望學習內容 | 開放式問題：希望在課程中學到什麼 |
 | 寫程式困難 | 開放式問題：目前寫程式最大的困難 |
